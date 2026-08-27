@@ -41,7 +41,7 @@ body{display:flex;flex-direction:column}
 .home-btn:hover span{color:#08183E}
 .home-btn.b-mint::before{background:var(--mint)}
 .home-btn.b-red::before{background:var(--red)}
-.timer-num{font-family:'Bebas Neue',sans-serif;font-size:clamp(80px,14vw,190px);line-height:1;letter-spacing:-0.02em;transition:color 0.3s}
+.timer-num{font-family:'Bebas Neue',sans-serif;font-size:clamp(72px,13vw,170px);line-height:1;letter-spacing:-0.02em;transition:color 0.3s}
 .timer-num.safe{color:var(--mint)}
 .timer-num.warn{color:var(--yellow)}
 .timer-num.danger{color:var(--red);animation:blink 0.5s ease infinite alternate}
@@ -53,7 +53,7 @@ body{display:flex;flex-direction:column}
 .q-level{font-size:9.5px;letter-spacing:0.3em;text-transform:uppercase;color:var(--yellow);margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:12px}
 .q-level-line{width:36px;height:1px;background:var(--yellow);opacity:0.35}
 .q-pts{font-family:'Bebas Neue',sans-serif;font-size:15px;color:var(--mint)}
-.q-text{font-family:'DM Serif Display',serif;font-size:clamp(26px,4.4vw,64px);font-style:italic;font-weight:700;line-height:1.1;color:var(--white);margin-bottom:24px;animation:slideIn 0.35s ease}
+.q-text{font-family:'DM Serif Display',serif;font-size:clamp(20px,3vw,42px);font-style:italic;font-weight:700;line-height:1.2;color:var(--white);margin-bottom:20px;animation:slideIn 0.35s ease}
 @keyframes slideIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
 .q-nav{display:flex;gap:10px;justify-content:center;margin-top:20px;flex-wrap:wrap}
 .q-btn{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.2em;text-transform:uppercase;padding:11px 24px;border:1px solid var(--border);background:transparent;color:var(--white);cursor:pointer;transition:all 0.2s}
@@ -127,7 +127,7 @@ body{display:flex;flex-direction:column}
 .g2-followup-text{font-size:clamp(11px,1.5vw,14px);color:var(--white);line-height:1.7;font-style:italic}
 .g2-card-option{font-size:clamp(10px,1.4vw,13px);color:#8AAAC0;padding:3px 0;line-height:1.55;letter-spacing:0.02em}
 /* ── STAGE BADGE (Game 1 & 2) ── */
-.stage-badge{font-family:'Bebas Neue',sans-serif;font-size:clamp(26px,4.2vw,60px);letter-spacing:0.28em;padding:5px 22px;border:1px solid;display:inline-block;transition:color 0.3s,border-color 0.3s,background 0.3s;margin-bottom:4px;min-width:200px;text-align:center}
+.stage-badge{font-family:'Bebas Neue',sans-serif;font-size:clamp(22px,3.6vw,46px);letter-spacing:0.28em;padding:5px 22px;border:1px solid;display:inline-block;transition:color 0.3s,border-color 0.3s,background 0.3s;margin-bottom:4px;min-width:200px;text-align:center}
 .stage-badge.think{color:var(--yellow);border-color:rgba(245,215,110,0.4);background:rgba(245,215,110,0.06)}
 .stage-badge.discuss{color:var(--mint);border-color:rgba(61,191,160,0.4);background:rgba(61,191,160,0.06)}
 .stage-badge.lock{color:var(--red);border-color:rgba(217,64,80,0.4);background:rgba(217,64,80,0.06)}
@@ -165,8 +165,9 @@ body{display:flex;flex-direction:column}
 .g3-reveal-btn{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:0.1em;padding:12px 36px;border:1px solid var(--yellow);background:transparent;color:var(--yellow);cursor:pointer;transition:all 0.2s;margin-top:14px}
 .g3-reveal-btn:hover{background:var(--yellow);color:#08183E}
 .tb-badge{display:inline-block;font-size:8.5px;letter-spacing:0.3em;text-transform:uppercase;color:var(--red);border:1px solid var(--red);padding:4px 14px;margin-bottom:18px}
-.tb-q-text{font-family:'DM Serif Display',serif;font-size:clamp(28px,4.6vw,66px);font-style:italic;font-weight:700;line-height:1.1;color:var(--white);margin-bottom:24px;animation:slideIn 0.35s ease}
+.tb-q-text{font-family:'DM Serif Display',serif;font-size:clamp(22px,3.4vw,46px);font-style:italic;font-weight:700;line-height:1.2;color:var(--white);margin-bottom:20px;animation:slideIn 0.35s ease}
 .score-bar{position:fixed;bottom:0;left:0;right:0;height:50px;background:rgba(6,14,42,0.97);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:center;gap:0;z-index:20}
+#score-teams{display:flex;align-items:center;flex-wrap:wrap;justify-content:center}
 .score-team{display:flex;align-items:center;gap:8px;padding:0 22px;border-right:1px solid var(--border)}
 .score-team:last-child{border-right:none}
 .score-team-name{font-size:8.5px;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted)}
@@ -303,6 +304,14 @@ table{max-width:100%}
       <div class="answer-reveal">
         <div class="answer-reveal-label">&#10010; Answer</div>
         <div class="answer-reveal-text" id="answer-text"></div>
+        <div class="answer-insight" id="answer-insight-block" style="display:none">
+          <span class="answer-insight-label">&#128172; Also Accepted / Insight</span>
+          <span id="answer-insight-text"></span>
+        </div>
+        <div class="answer-fact" id="answer-fact-block" style="display:none">
+          <span class="answer-fact-label">&#128161; Fact</span>
+          <span id="answer-fact-text"></span>
+        </div>
       </div>
     </div>
 
@@ -943,6 +952,38 @@ function showChampionsBeat(name){
   el.classList.add('show');
   playScore();
 }
+// ── AUTO-FIT: shrink variable-length text so the active page never needs to scroll ──
+const AUTOFIT_SELECTORS=['#q-text','#tb-text','#g2-card-take','.g3-criterion.current .g3-crit-desc'];
+let autofitRaf=null;
+function fitPageContent(){
+  if(autofitRaf)cancelAnimationFrame(autofitRaf);
+  autofitRaf=requestAnimationFrame(()=>{
+    const page=document.querySelector('.page.active');
+    if(!page)return;
+    const targets=[];
+    AUTOFIT_SELECTORS.forEach(sel=>{
+      page.querySelectorAll(sel).forEach(el=>{
+        if(el.offsetParent!==null)targets.push(el);
+      });
+    });
+    targets.forEach(el=>{el.style.fontSize='';});
+    if(!targets.length)return;
+    let guard=30;
+    while(document.documentElement.scrollHeight>window.innerHeight+2&&guard-->0){
+      let shrunkAny=false;
+      targets.forEach(el=>{
+        const current=parseFloat(getComputedStyle(el).fontSize);
+        if(current>14){
+          el.style.fontSize=(current-2)+'px';
+          shrunkAny=true;
+        }
+      });
+      if(!shrunkAny)break;
+    }
+  });
+}
+window.addEventListener('resize',fitPageContent);
+
 function scorePop(idx,amount){
   const teams=document.querySelectorAll('.score-team');
   const el=teams[idx];
@@ -990,6 +1031,7 @@ function goPage(id){
   });
   if(id==='finale')setTimeout(buildFinale,120);
   if(id==='game3')buildLockInRow();
+  fitPageContent();
 }
 
 // ===== GAME 1 =====
@@ -1023,6 +1065,7 @@ function g1SetStage(n){
   });
   // Hide answer box when resetting to earlier stages
   if(n<4) document.getElementById('answer-box').style.display='none';
+  fitPageContent();
 }
 
 function buildQDots(){
@@ -1128,6 +1171,7 @@ function g2SetStage(n){
   if(n===3) g2BuildPredPanel();
   if(n===4) g2BuildPresentPanel();
   if(n===5) g2BuildJudgePanel();
+  fitPageContent();
 }
 
 function buildCardSelector(){
@@ -1343,12 +1387,14 @@ function g3RevealNext(){
     }
     ptsEl.textContent='Lock in now → '+pts+' pts';
     el.classList.add('reveal','current');
+    fitPageContent();
   }
 }
 function resetG3(){
   buildG3Criteria();buildLockInRow();
   document.getElementById('g3-vol-name').textContent='THE CHURCH USHER';
   document.getElementById('g3-answer-box').style.display='none';
+  fitPageContent();
 }
 function buildLockInRow(){
   const row=document.getElementById('g3-lockin-row');
@@ -1421,12 +1467,14 @@ function loadTb(idx){
   document.querySelectorAll('#tb-dots .q-dot').forEach((d,i)=>{
     d.className='q-dot'+(i<idx?' done':'')+(i===idx?' current':'');
   });
+  fitPageContent();
 }
 function tbReveal(){
   playReveal();
   document.getElementById('tb-answer-box').style.display='block';
   document.getElementById('tb-answer-text').textContent=tbQuestions[tbCurrent].a;
   stopTimer('tb');
+  fitPageContent();
 }
 function tbNext(){if(tbCurrent<tbQuestions.length-1)loadTb(tbCurrent+1);}
 function tbPrev(){if(tbCurrent>0)loadTb(tbCurrent-1);}

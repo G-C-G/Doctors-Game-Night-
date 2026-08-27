@@ -1,0 +1,1608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>GCG — Doctors Games Night</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#08183E;--yellow:#F5D76E;--yellow2:#F9E8A0;--mint:#3DBFA0;--mint2:#6DD5BF;--white:#F0EDE4;--red:#D94050;--muted:#4A6080;--border:rgba(255,255,255,0.07);--card:#0F2560}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--white);font-family:'DM Mono',monospace;cursor:none}
+body{display:flex;flex-direction:column}
+.grid-bg{position:fixed;inset:0;background-image:linear-gradient(rgba(61,191,160,0.035) 1px,transparent 1px),linear-gradient(90deg,rgba(61,191,160,0.035) 1px,transparent 1px);background-size:52px 52px;pointer-events:none;z-index:0}
+.grid-bg::after{content:'';position:fixed;inset:0;background-image:radial-gradient(circle,rgba(245,215,110,0.055) 1.5px,transparent 1.5px);background-size:104px 104px;background-position:52px 52px;pointer-events:none}
+.vignette{position:fixed;inset:0;background:radial-gradient(ellipse at center,transparent 30%,rgba(4,10,28,0.92) 100%);pointer-events:none;z-index:1}
+.ecg-bg{position:fixed;bottom:68px;left:0;right:0;z-index:2;pointer-events:none;opacity:0.06}
+.screen{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 60px 70px}
+.topbar{position:fixed;top:0;left:0;right:0;z-index:20;height:54px;display:flex;align-items:center;justify-content:space-between;padding:0 36px;border-bottom:1px solid var(--border);background:rgba(8,24,62,0.94);backdrop-filter:blur(14px)}
+.tb-brand{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:0.1em;color:var(--yellow);display:flex;align-items:center;gap:10px}
+.tb-cross{color:var(--mint);font-size:16px;line-height:1}
+.tb-game{font-size:8px;letter-spacing:0.3em;text-transform:uppercase;color:var(--muted)}
+.tb-nav{display:flex;gap:3px;flex-wrap:wrap}
+.nav-btn{font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.15em;text-transform:uppercase;padding:7px 14px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all 0.2s}
+.nav-btn:hover,.nav-btn.active{background:var(--yellow);color:#08183E;border-color:var(--yellow);cursor:pointer}
+.page{display:none;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%;text-align:center;animation:fadeIn 0.45s ease}
+.page.active{display:flex}
+@keyframes fadeIn{from{opacity:0;transform:scale(0.985)}to{opacity:1;transform:scale(1)}}
+.ecg-path{stroke-dasharray:320;stroke-dashoffset:320;animation:ecgDraw 2.2s ease-in-out infinite}
+@keyframes ecgDraw{0%{stroke-dashoffset:320;opacity:0}12%{opacity:1}72%{stroke-dashoffset:0;opacity:1}88%{stroke-dashoffset:0;opacity:0.25}100%{stroke-dashoffset:320;opacity:0}}
+.pulse-dot{width:7px;height:7px;border-radius:50%;background:var(--red);animation:pulseDot 2.2s ease-in-out infinite;animation-delay:1s}
+@keyframes pulseDot{0%,100%{transform:scale(0.7);opacity:0.25}50%{transform:scale(1.5);opacity:1;box-shadow:0 0 14px var(--red),0 0 28px rgba(217,64,80,0.4)}}
+.home-title{font-family:'DM Serif Display',serif;font-size:clamp(44px,7.5vw,108px);font-style:italic;font-weight:700;line-height:0.88;letter-spacing:-0.02em;color:var(--white);margin-bottom:10px}
+.home-title span{color:var(--yellow)}
+.home-sub{font-size:clamp(8px,1.3vw,12px);letter-spacing:0.32em;text-transform:uppercase;color:var(--mint);margin-bottom:6px}
+.home-date{font-size:clamp(8px,1.1vw,10px);letter-spacing:0.2em;color:var(--muted);margin-bottom:36px}
+.home-btns{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+.home-btn{font-family:'Bebas Neue',sans-serif;font-size:clamp(15px,2vw,24px);letter-spacing:0.1em;padding:16px 40px;border:1px solid var(--border);background:transparent;color:var(--white);cursor:pointer;transition:all 0.3s;position:relative;overflow:hidden}
+.home-btn::before{content:'';position:absolute;inset:0;background:var(--yellow);transform:scaleX(0);transform-origin:left;transition:transform 0.3s}
+.home-btn:hover::before{transform:scaleX(1)}
+.home-btn span{position:relative;z-index:1}
+.home-btn:hover span{color:#08183E}
+.home-btn.b-mint::before{background:var(--mint)}
+.home-btn.b-red::before{background:var(--red)}
+.timer-num{font-family:'Bebas Neue',sans-serif;font-size:clamp(72px,13vw,170px);line-height:1;letter-spacing:-0.02em;transition:color 0.3s}
+.timer-num.safe{color:var(--mint)}
+.timer-num.warn{color:var(--yellow)}
+.timer-num.danger{color:var(--red);animation:blink 0.5s ease infinite alternate}
+@keyframes blink{from{opacity:1}to{opacity:0.45}}
+.timer-label{font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+.timer-bar-track{width:280px;height:3px;background:var(--border);border-radius:999px;margin-top:10px;overflow:hidden}
+.timer-bar-fill{height:100%;background:var(--mint);border-radius:999px;transition:width 1s linear,background 0.3s}
+.g1-wrap{width:100%;max-width:880px}
+.q-level{font-size:9.5px;letter-spacing:0.3em;text-transform:uppercase;color:var(--yellow);margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:12px}
+.q-level-line{width:36px;height:1px;background:var(--yellow);opacity:0.35}
+.q-pts{font-family:'Bebas Neue',sans-serif;font-size:15px;color:var(--mint)}
+.q-text{font-family:'DM Serif Display',serif;font-size:clamp(24px,4vw,54px);font-style:italic;font-weight:700;line-height:1.1;color:var(--white);margin-bottom:24px;animation:slideIn 0.35s ease}
+@keyframes slideIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.q-nav{display:flex;gap:10px;justify-content:center;margin-top:20px;flex-wrap:wrap}
+.q-btn{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.2em;text-transform:uppercase;padding:11px 24px;border:1px solid var(--border);background:transparent;color:var(--white);cursor:pointer;transition:all 0.2s}
+.q-btn:hover{border-color:var(--yellow);color:var(--yellow)}
+.q-btn.reveal{border-color:var(--mint);background:var(--mint);color:#08183E}
+.q-btn.reveal:hover{background:var(--mint2);border-color:var(--mint2)}
+.q-counter{font-size:9px;letter-spacing:0.2em;color:var(--muted);margin-top:12px}
+.q-choices{display:grid;grid-template-columns:1fr 1fr;gap:8px 20px;max-width:640px;margin:0 auto 18px;text-align:left}
+.q-choice{font-family:'DM Mono',monospace;font-size:clamp(13px,1.8vw,18px);color:var(--white);padding:8px 14px;border:1px solid var(--border);letter-spacing:0.04em;line-height:1.4}
+.q-choice.highlight{border-color:var(--mint);color:var(--mint);background:rgba(61,191,160,0.07)}
+.answer-reveal{background:rgba(61,191,160,0.07);border:1px solid rgba(61,191,160,0.28);padding:20px 28px;margin-top:16px;max-width:700px;margin-left:auto;margin-right:auto;animation:fadeIn 0.35s ease;text-align:left}
+.answer-reveal-label{font-size:7.5px;letter-spacing:0.3em;text-transform:uppercase;color:var(--mint);margin-bottom:8px}
+.answer-reveal-text{font-size:clamp(11px,1.6vw,15px);color:var(--white);line-height:1.65;margin-bottom:10px}
+.answer-insight{font-size:clamp(10px,1.4vw,13px);color:var(--yellow);line-height:1.6;margin-bottom:8px;padding-top:8px;border-top:1px solid rgba(245,215,110,0.15)}
+.answer-fact{font-size:clamp(9px,1.3vw,12px);color:var(--muted);line-height:1.6;padding-top:8px;border-top:1px solid var(--border)}
+.answer-insight-label,.answer-fact-label{font-size:7px;letter-spacing:0.3em;text-transform:uppercase;margin-bottom:4px;display:block}
+.answer-insight-label{color:var(--yellow)}
+.answer-fact-label{color:var(--muted)}
+.q-dots{display:flex;gap:6px;justify-content:center;margin-bottom:16px;flex-wrap:wrap}
+.q-dot{width:9px;height:9px;border-radius:50%;border:1px solid var(--muted);cursor:pointer;transition:all 0.2s;flex-shrink:0}
+.q-dot.done{background:var(--mint);border-color:var(--mint)}
+.q-dot.current{border-color:var(--yellow);box-shadow:0 0 6px var(--yellow)}
+.g2-wrap{width:100%;max-width:780px}
+.card-flip-wrap{perspective:1000px;margin-bottom:16px}
+.card-flip{width:100%;min-height:200px;position:relative;transform-style:preserve-3d;transition:transform 0.65s cubic-bezier(0.4,0,0.2,1)}
+.card-flip.flipped{transform:rotateY(180deg)}
+.card-face{position:absolute;inset:0;backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px;border:1px solid var(--border)}
+.card-back{background:var(--bg);transform:rotateY(0deg)}
+.card-front{background:linear-gradient(135deg,#091840,#0c2260);border-color:rgba(245,215,110,0.28);transform:rotateY(180deg)}
+.card-back-design{display:flex;flex-direction:column;align-items:center;gap:8px;opacity:0.38}
+.card-back-text{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:0.1em;color:var(--yellow)}
+.card-num{font-size:8.5px;letter-spacing:0.3em;text-transform:uppercase;color:var(--yellow);margin-bottom:10px}
+.card-take{font-family:'DM Serif Display',serif;font-style:italic;font-size:clamp(16px,2.5vw,32px);font-weight:700;line-height:1.2;color:var(--white);text-align:center}
+.card-tip{font-size:9.5px;color:var(--muted);margin-top:10px;max-width:480px;text-align:center;line-height:1.65}
+.card-selector{display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin-bottom:12px}
+.card-sel-btn{font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.15em;text-transform:uppercase;padding:7px 14px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all 0.2s}
+.card-sel-btn:hover{border-color:var(--yellow);color:var(--yellow)}
+.card-sel-btn.used{background:#0a1020;color:#1e2e48;border-color:#1a2540;cursor:default}
+.card-sel-btn.active{border-color:var(--yellow);color:var(--yellow);background:rgba(245,215,110,0.07)}
+.pred-panel{background:rgba(12,34,80,0.7);border:1px solid var(--border);padding:12px 16px;margin-bottom:10px;display:none;flex-direction:column;align-items:center;gap:10px;animation:fadeIn 0.3s ease}
+.pred-panel.show{display:flex}
+.pred-title{font-size:8px;letter-spacing:0.28em;text-transform:uppercase;color:var(--yellow)}
+.pred-teams{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.pred-team{display:flex;flex-direction:column;align-items:center;gap:5px}
+.pred-name{font-size:7.5px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted)}
+.pred-btns{display:flex;gap:4px}
+.pred-btn{font-family:'DM Mono',monospace;font-size:7.5px;letter-spacing:0.12em;text-transform:uppercase;padding:5px 9px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all 0.2s}
+.pred-btn:hover{border-color:var(--yellow)}
+.pred-btn.sel-agree{background:var(--mint);color:#08183E;border-color:var(--mint)}
+.pred-btn.sel-disagree{background:var(--red);color:white;border-color:var(--red)}
+.pred-vote-row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:4px}
+.pred-vote-btn{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.14em;text-transform:uppercase;padding:7px 14px;border:1px solid var(--border);background:transparent;color:var(--white);cursor:pointer;transition:all 0.2s}
+.pred-vote-btn:hover{background:var(--mint);color:#08183E;border-color:var(--mint)}
+.persuasion-row{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:6px}
+.persuasion-btn{font-family:'DM Mono',monospace;font-size:7.5px;letter-spacing:0.12em;text-transform:uppercase;padding:5px 10px;border:1px solid rgba(245,215,110,0.3);background:transparent;color:rgba(245,215,110,0.5);cursor:pointer;transition:all 0.2s}
+.persuasion-btn:hover{background:var(--yellow);color:#08183E;border-color:var(--yellow)}
+/* ── GAME 2 STAGES ── */
+.g2-stage{display:none;flex-direction:column;align-items:center;gap:10px;width:100%;animation:fadeIn 0.3s ease;margin-bottom:8px;padding:14px 0}
+.g2-stage-label{font-size:8px;letter-spacing:0.28em;text-transform:uppercase;color:var(--yellow);margin-bottom:2px}
+.g2-pred-teams-grid{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.g2-pred-team{display:flex;flex-direction:column;align-items:center;gap:5px}
+.g2-lock-btn{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.12em;text-transform:uppercase;padding:5px 9px;border:1px solid rgba(61,191,160,0.4);background:transparent;color:rgba(61,191,160,0.6);cursor:pointer;transition:all 0.2s}
+.g2-lock-btn:hover{background:var(--mint);color:#08183E;border-color:var(--mint)}
+.g2-stage-btn{font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.18em;text-transform:uppercase;padding:9px 24px;border:1px solid var(--yellow);background:transparent;color:var(--yellow);cursor:pointer;transition:all 0.2s;margin-top:6px}
+.g2-stage-btn:hover{background:var(--yellow);color:#08183E}
+.g2-present-active{font-family:'Bebas Neue',sans-serif;font-size:clamp(22px,3.5vw,42px);letter-spacing:0.08em;color:var(--mint);text-align:center}
+.g2-judge-section{display:flex;flex-direction:column;align-items:center;gap:7px;width:100%;border-top:1px solid var(--border);padding-top:10px;margin-top:4px}
+.g2-judge-row{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.g2-followup{background:rgba(245,215,110,0.06);border:1px solid rgba(245,215,110,0.18);padding:12px 20px;max-width:640px;margin-top:8px;text-align:center;animation:fadeIn 0.4s ease}
+.g2-followup-label{font-size:7px;letter-spacing:0.28em;text-transform:uppercase;color:var(--yellow);margin-bottom:6px}
+.g2-followup-text{font-size:clamp(11px,1.5vw,14px);color:var(--white);line-height:1.7;font-style:italic}
+.g2-card-option{font-size:clamp(10px,1.4vw,13px);color:#8AAAC0;padding:3px 0;line-height:1.55;letter-spacing:0.02em}
+/* ── STAGE BADGE (Game 1 & 2) ── */
+.stage-badge{font-family:'Bebas Neue',sans-serif;font-size:clamp(24px,4vw,52px);letter-spacing:0.28em;padding:5px 22px;border:1px solid;display:inline-block;transition:color 0.3s,border-color 0.3s,background 0.3s;margin-bottom:4px;min-width:200px;text-align:center}
+.stage-badge.think{color:var(--yellow);border-color:rgba(245,215,110,0.4);background:rgba(245,215,110,0.06)}
+.stage-badge.discuss{color:var(--mint);border-color:rgba(61,191,160,0.4);background:rgba(61,191,160,0.06)}
+.stage-badge.lock{color:var(--red);border-color:rgba(217,64,80,0.4);background:rgba(217,64,80,0.06)}
+.stage-badge.present{color:var(--white);border-color:rgba(255,255,255,0.25);background:rgba(255,255,255,0.04)}
+.stage-badge.result{color:var(--yellow);border-color:rgba(245,215,110,0.5);background:rgba(245,215,110,0.1)}
+.stage-instruction{font-size:clamp(11px,1.6vw,15px);color:#8AAAC0;letter-spacing:0.06em;text-align:center;line-height:1.6;min-height:20px;margin-bottom:8px}
+.stage-next-hint{font-size:8px;letter-spacing:0.18em;text-transform:uppercase;color:#2a3a5a;text-align:center;margin-top:4px}
+.g1-ctrl-set{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:10px;animation:fadeIn 0.3s ease}
+.pause-btn{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.18em;text-transform:uppercase;padding:7px 18px;border:1px solid rgba(245,215,110,0.35);background:transparent;color:var(--yellow);cursor:pointer;transition:all 0.2s;min-width:110px}
+.pause-btn:hover{background:rgba(245,215,110,0.1);border-color:var(--yellow)}
+.pause-btn.paused{border-color:var(--mint);color:var(--mint)}
+.pause-btn.paused:hover{background:rgba(61,191,160,0.1)}
+.g3-wrap{width:100%;max-width:940px}
+.g3-title-big{font-family:'DM Serif Display',serif;font-size:clamp(26px,4vw,56px);font-style:italic;font-weight:700;line-height:1;color:var(--white);margin-bottom:6px}
+.g3-sub{font-size:9.5px;letter-spacing:0.25em;text-transform:uppercase;color:var(--yellow);margin-bottom:16px}
+.g3-criteria{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;text-align:left}
+.g3-criterion{background:rgba(12,32,80,0.72);border:1px solid var(--border);padding:16px;position:relative;overflow:hidden;opacity:0;transform:translateY(14px);transition:all 0.45s}
+.g3-criterion.reveal{opacity:1;transform:translateY(0)}
+.g3-crit-num{font-family:'Bebas Neue',sans-serif;font-size:34px;color:rgba(245,215,110,0.1);position:absolute;top:6px;right:9px;line-height:1}
+.g3-crit-icon{font-size:20px;margin-bottom:5px}
+.g3-crit-title{font-size:11px;font-weight:500;color:var(--yellow);margin-bottom:5px;letter-spacing:0.05em}
+.g3-crit-desc{font-size:9.5px;color:#8AAAC0;line-height:1.65}
+.g3-volunteer{background:rgba(61,191,160,0.06);border:1px solid rgba(61,191,160,0.18);padding:10px 18px;margin-bottom:12px;font-size:clamp(10px,1.5vw,14px);color:var(--mint);letter-spacing:0.04em;line-height:1.6}
+.g3-reveal-btn{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:0.1em;padding:12px 36px;border:1px solid var(--yellow);background:transparent;color:var(--yellow);cursor:pointer;transition:all 0.2s;margin-top:14px}
+.g3-reveal-btn:hover{background:var(--yellow);color:#08183E}
+.tb-badge{display:inline-block;font-size:8.5px;letter-spacing:0.3em;text-transform:uppercase;color:var(--red);border:1px solid var(--red);padding:4px 14px;margin-bottom:18px}
+.tb-q-text{font-family:'DM Serif Display',serif;font-size:clamp(26px,4.2vw,58px);font-style:italic;font-weight:700;line-height:1.1;color:var(--white);margin-bottom:24px;animation:slideIn 0.35s ease}
+.score-bar{position:fixed;bottom:0;left:0;right:0;height:50px;background:rgba(6,14,42,0.97);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:center;gap:0;z-index:20}
+.score-team{display:flex;align-items:center;gap:8px;padding:0 22px;border-right:1px solid var(--border)}
+.score-team:last-child{border-right:none}
+.score-team-name{font-size:8.5px;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted)}
+.score-team-pts{font-family:'Bebas Neue',sans-serif;font-size:21px;color:var(--yellow);cursor:pointer;min-width:32px;text-align:center}
+.score-team-pts:hover{color:var(--white)}
+.score-edit-hint{font-size:7.5px;color:#1e2e48;letter-spacing:0.1em;position:fixed;bottom:54px;right:14px}
+.score-reset{font-size:8.5px;letter-spacing:0.15em;text-transform:uppercase;color:#2a3a5a;cursor:pointer;padding:0 16px;border-left:1px solid var(--border);height:100%;display:flex;align-items:center}
+.score-reset:hover{color:var(--red)}
+.media-cue-flash{position:fixed;top:66px;left:50%;transform:translateX(-50%);background:rgba(245,215,110,0.09);border:1px solid rgba(245,215,110,0.38);padding:9px 22px;font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--yellow);z-index:50;opacity:0;transition:opacity 0.3s;pointer-events:none;white-space:nowrap}
+.media-cue-flash.show{opacity:1}
+.whisper{position:fixed;inset:0;background:rgba(0,0,0,0.93);z-index:100;display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px;animation:fadeIn 0.3s ease}
+.whisper.show{display:flex}
+.whisper-text{font-family:'DM Serif Display',serif;font-style:italic;font-size:clamp(20px,3.2vw,48px);color:var(--white);max-width:680px;text-align:center;line-height:1.3}
+.whisper-close{font-size:9px;letter-spacing:0.25em;text-transform:uppercase;color:var(--muted);cursor:pointer;margin-top:18px;border:1px solid var(--border);padding:9px 22px}
+.whisper-close:hover{color:var(--yellow);border-color:var(--yellow)}
+::-webkit-scrollbar{display:none}
+</style>
+<style id="gcg-responsive-upgrade">
+html,body{width:100%!important;min-height:100%!important;overflow:auto!important;cursor:auto!important}
+.screen{position:relative!important;inset:auto!important;min-height:100vh;padding:clamp(16px,2vw,48px)!important}
+img,svg,canvas,video{max-width:100%!important;height:auto!important}
+table{max-width:100%}
+@media(max-width:1024px){.topbar{padding:0 12px!important}.tb-nav{flex-wrap:wrap!important}}
+@media(max-width:768px){.home-btns,.button-row{flex-direction:column!important;width:100%!important}.home-btn,button{max-width:100%}h1,h2{word-break:break-word}.g3-criteria{grid-template-columns:1fr!important}}
+@media(max-width:480px){.screen{padding:12px!important}}
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+<div class="vignette"></div>
+<svg class="ecg-bg" viewBox="0 0 1440 44" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M0,22 L90,22 L100,22 L106,4 L114,40 L120,22 L170,22 L176,16 L182,22 L310,22 L320,22 L326,4 L334,40 L340,22 L390,22 L396,16 L402,22 L530,22 L540,22 L546,4 L554,40 L560,22 L610,22 L616,16 L622,22 L750,22 L760,22 L766,4 L774,40 L780,22 L830,22 L836,16 L842,22 L970,22 L980,22 L986,4 L994,40 L1000,22 L1050,22 L1056,16 L1062,22 L1190,22 L1200,22 L1206,4 L1214,40 L1220,22 L1270,22 L1276,16 L1282,22 L1440,22" fill="none" stroke="#3DBFA0" stroke-width="1.5"/>
+</svg>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="tb-brand"><span class="tb-cross">&#10010;</span> GCG &middot; Doctors Night</div>
+  <div class="tb-nav">
+    <button class="nav-btn active" onclick="goPage('home')">Home</button>
+    <button class="nav-btn" onclick="goPage('game1')">Game 1</button>
+    <button class="nav-btn" onclick="goPage('game2')">Game 2</button>
+    <button class="nav-btn" onclick="goPage('humanity')" style="border-color:rgba(245,215,110,0.3);color:rgba(245,215,110,0.6)">&#9829; Intermission</button>
+    <button class="nav-btn" onclick="goPage('game3')">Game 3</button>
+    <button class="nav-btn" onclick="goPage('tiebreaker')">Tiebreaker</button>
+    <button class="nav-btn" onclick="goPage('finale')" style="border-color:rgba(245,215,110,0.3);color:rgba(245,215,110,0.5)">&#10010; Finale</button>
+    <button class="nav-btn" onclick="goPage('goodbye')" style="border-color:rgba(61,191,160,0.3);color:rgba(61,191,160,0.6)">&#128079; Goodbye</button>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px">
+    <div class="tb-game" id="topGameLabel">4th June &middot; Dzorwulu, Accra</div>
+    <button id="sound-toggle" onclick="toggleSound()" style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.15em;text-transform:uppercase;padding:5px 10px;border:1px solid rgba(61,191,160,0.35);background:transparent;color:rgba(61,191,160,0.7);cursor:pointer;white-space:nowrap;transition:all 0.2s" onmouseover="this.style.borderColor='var(--mint)';this.style.color='var(--mint)'" onmouseout="this.style.borderColor='rgba(61,191,160,0.35)';this.style.color='rgba(61,191,160,0.7)'">♥ Sound On</button>
+  </div>
+</div>
+
+<div class="media-cue-flash" id="mediaCue"></div>
+
+<!-- HOME -->
+<div class="screen page active" id="page-home">
+  <div style="margin-bottom:24px;display:flex;flex-direction:column;align-items:center;gap:8px">
+    <svg width="180" height="52" viewBox="0 0 180 52" xmlns="http://www.w3.org/2000/svg">
+      <path class="ecg-path" d="M 0 26 L 28 26 L 34 26 L 38 5 L 46 47 L 52 26 L 72 26 L 78 18 L 84 26 L 118 26 L 124 26 L 128 5 L 136 47 L 142 26 L 162 26 L 168 18 L 174 26 L 180 26" fill="none" stroke="#3DBFA0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <div style="display:flex;justify-content:center"><div class="pulse-dot"></div></div>
+  </div>
+  <div class="home-title">Doctors<br/><span>Games Night</span></div>
+  <div class="home-sub">Gold Coast Games &middot; Professional Series</div>
+  <div class="home-date">4th June 2026 &middot; 7:00 PM &middot; Blohum Road, Dzorwulu &middot; Accra</div>
+  <div class="home-btns">
+    <button class="home-btn" onclick="goPage('game1')"><span>&#129504; Game 1 &mdash; Doctor, What Would You Do?</span></button>
+    <button class="home-btn b-mint" onclick="goPage('game2')"><span>&#128172; Game 2 &mdash; The Doctors&apos; Lounge</span></button>
+    <button class="home-btn" onclick="goPage('game3')"><span>&#127973; Game 3 &mdash; The Ghana Case Files</span></button>
+  </div>
+</div>
+
+<!-- GAME 1: DOCTOR, WHAT WOULD YOU DO? -->
+<div class="screen page" id="page-game1">
+  <div class="g1-wrap">
+    <div class="q-level">
+      <div class="q-level-line"></div>
+      <span>Game 1 &mdash; Doctor, What Would You Do?</span>
+      <span class="q-pts" id="g1-pts">1 pt</span>
+      <div class="q-level-line"></div>
+    </div>
+    <div class="q-dots" id="q-dots"></div>
+
+    <!-- STAGE BADGE — visible to the whole room -->
+    <div id="g1-stage-badge" class="stage-badge think" style="display:none">THINK</div>
+    <div id="g1-stage-instruction" class="stage-instruction"></div>
+
+    <div class="q-text" id="q-text">Ready to begin?</div>
+    <div class="q-choices" id="q-choices" style="display:none"></div>
+
+    <div id="answer-box" style="display:none">
+      <div class="answer-reveal">
+        <div class="answer-reveal-label">&#10010; Answer</div>
+        <div class="answer-reveal-text" id="answer-text"></div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;align-items:center;margin-top:14px">
+      <div class="timer-num safe" id="g1-timer">30</div>
+      <div class="timer-bar-track"><div class="timer-bar-fill" id="g1-bar" style="width:100%"></div></div>
+      <div class="timer-label" id="g1-timer-label">seconds</div>
+      <button class="pause-btn" id="g1-pause-btn" onclick="togglePause('g1')" style="display:none;margin-top:10px">&#9646;&#9646; Pause</button>
+    </div>
+
+    <!-- Stage 0: Question loaded — waiting to begin -->
+    <div class="g1-ctrl-set" id="g1-ctrl-0">
+      <button class="q-btn" onclick="g1Prev()">&#8592; Prev</button>
+      <button class="q-btn reveal" onclick="g1StartThink()">&#9654; Begin Question</button>
+      <button class="q-btn" onclick="g1Next()">Next &#8594;</button>
+    </div>
+
+    <!-- Stage 1: THINK -->
+    <div class="g1-ctrl-set" id="g1-ctrl-1" style="display:none">
+      <button class="q-btn reveal" onclick="startTimer('g1',10)">&#9654; Start 10s</button>
+      <button class="q-btn" onclick="g1GoDiscuss()">&#8594; Discuss</button>
+    </div>
+
+    <!-- Stage 2: DISCUSS -->
+    <div class="g1-ctrl-set" id="g1-ctrl-2" style="display:none">
+      <button class="q-btn reveal" onclick="startTimer('g1',45);document.getElementById('g1-timer-label').textContent='Discuss \u2014 45s'">&#9654; Start 45s</button>
+      <button class="q-btn" onclick="resetTimer('g1',45);document.getElementById('g1-timer-label').textContent='Discuss \u2014 45s'">&#8634; Reset</button>
+      <button class="q-btn" onclick="g1GoLock()">&#8594; Lock Answers</button>
+    </div>
+
+    <!-- Stage 3: LOCK -->
+    <div class="g1-ctrl-set" id="g1-ctrl-3" style="display:none">
+      <button class="q-btn reveal" onclick="startTimer('g1',10);document.getElementById('g1-timer-label').textContent='Lock \u2014 10s'">&#9654; Start 10s</button>
+      <button class="q-btn" onclick="resetTimer('g1',10);document.getElementById('g1-timer-label').textContent='Lock \u2014 10s'">&#8634; Reset</button>
+      <button class="q-btn reveal" onclick="g1Reveal()" style="background:var(--mint);border-color:var(--mint);color:#08183E">&#10010; Reveal</button>
+    </div>
+
+    <!-- Stage 4: RESULT -->
+    <div class="g1-ctrl-set" id="g1-ctrl-4" style="display:none">
+      <button class="q-btn" onclick="g1Prev()">&#8592; Prev</button>
+      <button class="q-btn reveal" onclick="g1Next()">Next Question &#8594;</button>
+    </div>
+
+    <div class="stage-next-hint" id="g1-next-hint"></div>
+    <div class="q-counter" id="q-counter">Question 1 of 10</div>
+  </div>
+</div>
+
+<!-- GAME 2: THE DOCTORS LOUNGE -->
+<div class="screen page" id="page-game2">
+  <div class="g2-wrap">
+    <div class="q-level">
+      <div class="q-level-line"></div>
+      <span>Game 2 &mdash; The Doctors&apos; Lounge</span>
+      <span class="q-pts">Predict &bull; Discuss &bull; Persuade</span>
+      <div class="q-level-line"></div>
+    </div>
+    <div style="font-size:9px;color:var(--muted);letter-spacing:0.1em;margin-bottom:10px;line-height:1.7;max-width:620px;text-align:center">
+      Each card: teams predict the room majority &bull; Correct prediction = +1 &bull; Best argument = +1 &bull; Judges split = +0.5 each
+    </div>
+    <div class="card-selector" id="card-selector"></div>
+    <div class="card-flip-wrap">
+      <div class="card-flip" id="card-flip">
+        <div class="card-face card-back">
+          <div class="card-back-design">
+            <svg width="44" height="28" viewBox="0 0 180 52"><path d="M 0 26 L 28 26 L 34 26 L 38 5 L 46 47 L 52 26 L 72 26 L 78 18 L 84 26 L 118 26" fill="none" stroke="#F5D76E" stroke-width="2" stroke-linecap="round"/></svg>
+            <div class="card-back-text">DISCUSSION</div>
+            <div style="font-size:8.5px;letter-spacing:0.2em;color:#1e2e48">Select a card to begin</div>
+          </div>
+        </div>
+        <div class="card-face card-front">
+          <div class="card-num" id="g2-card-num">Card 01</div>
+          <div class="card-take" id="g2-card-take"></div>
+          <div id="g2-card-options" style="display:none;margin-top:12px;text-align:left;width:100%;max-width:460px"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SHARED TIMER (visible after card selected) -->
+    <div id="g2-timer-wrap" style="display:none;text-align:center;margin-bottom:2px">
+      <div class="stage-badge think" id="g2-stage-badge" style="display:none">THINK</div>
+      <div class="stage-instruction" id="g2-stage-instruction"></div>
+      <div class="timer-num safe" id="g2-timer" style="font-size:clamp(46px,7.5vw,96px)">60</div>
+      <div class="timer-bar-track" style="width:210px"><div class="timer-bar-fill" id="g2-bar" style="width:100%"></div></div>
+      <div class="timer-label" id="g2-timer-label">&mdash;</div>
+      <button class="pause-btn" id="g2-pause-btn" onclick="togglePause('g2')" style="display:none;margin-top:10px">&#9646;&#9646; Pause</button>
+    </div>
+
+    <!-- STAGE 1: THINK (15s personal reflection) -->
+    <div class="g2-stage" id="g2-stage-1">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+        <button class="q-btn reveal" onclick="startTimer('g2',15);document.getElementById('g2-timer-label').textContent='Think \u2014 15s'">&#9654; Start 15s</button>
+        <button class="q-btn" onclick="resetTimer('g2',15);document.getElementById('g2-timer-label').textContent='Think \u2014 15s'">&#8634; Reset</button>
+        <button class="q-btn" onclick="g2GoDiscuss()">&#8594; Discuss</button>
+      </div>
+    </div>
+
+    <!-- STAGE 2: DISCUSS (60s team discussion) -->
+    <div class="g2-stage" id="g2-stage-2">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+        <button class="q-btn reveal" onclick="startTimer('g2',60);document.getElementById('g2-timer-label').textContent='Discuss \u2014 60s'">&#9654; Start 60s</button>
+        <button class="q-btn" onclick="resetTimer('g2',60);document.getElementById('g2-timer-label').textContent='Discuss \u2014 60s'">&#8634; Reset</button>
+      </div>
+      <button class="g2-stage-btn" onclick="g2GoLock()">&#8594; Lock Answers</button>
+    </div>
+
+    <!-- STAGE 3: LOCK (15s — teams submit Agree / Disagree) -->
+    <div class="g2-stage" id="g2-stage-3">
+      <div style="font-size:8px;color:var(--muted);letter-spacing:0.1em;margin-bottom:6px;text-align:center">What will the ROOM MAJORITY decide? Each team locks their prediction.</div>
+      <div class="g2-pred-teams-grid" id="g2-pred-teams"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:8px">
+        <button class="q-btn reveal" onclick="startTimer('g2',15);document.getElementById('g2-timer-label').textContent='Lock \u2014 15s'">&#9654; Start 15s</button>
+        <button class="q-btn" onclick="resetTimer('g2',15);document.getElementById('g2-timer-label').textContent='Lock \u2014 15s'">&#8634; Reset</button>
+      </div>
+      <button class="g2-stage-btn" onclick="g2GoPresent()">&#127908; Presentations</button>
+    </div>
+
+    <!-- STAGE 4: PRESENT (60s per team) -->
+    <div class="g2-stage" id="g2-stage-4">
+      <div class="g2-present-active" id="g2-present-active">&mdash;</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+        <button class="q-btn reveal" onclick="startTimer('g2',60)">&#9654; 60s</button>
+        <button class="q-btn" onclick="resetTimer('g2',60)">&#8634; Reset</button>
+        <button class="q-btn" id="g2-next-presenter-btn" onclick="g2NextPresenter()">Next Team &#8594;</button>
+      </div>
+      <button class="g2-stage-btn" onclick="g2GoJudge()">&#10010; Judge Now</button>
+    </div>
+
+    <!-- STAGE 5: JUDGE (award points) -->
+    <div class="g2-stage" id="g2-stage-5">
+      <div class="g2-judge-section">
+        <div style="font-size:7.5px;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted)">&#10010; Prediction Check &mdash; What did the room majority decide?</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+          <button class="pred-vote-btn" onclick="g2CheckPredictions('agree')">Majority: AGREE</button>
+          <button class="pred-vote-btn" onclick="g2CheckPredictions('disagree')" style="border-color:rgba(217,64,80,0.4);color:rgba(217,64,80,0.7)">Majority: DISAGREE</button>
+        </div>
+      </div>
+      <div class="g2-judge-section">
+        <div style="font-size:7.5px;letter-spacing:0.2em;text-transform:uppercase;color:var(--yellow)">&#10024; Persuasion Point &mdash; Best Argument:</div>
+        <div class="g2-judge-row" id="g2-judge-persuasion-row"></div>
+        <div style="font-size:7px;letter-spacing:0.18em;text-transform:uppercase;color:var(--muted);margin-top:6px">Judges Split? Award +0.5 each:</div>
+        <div class="g2-judge-row" id="g2-judge-split-row"></div>
+      </div>
+    </div>
+
+    <!-- Always-available flip -->
+    <div style="margin-top:10px;text-align:center">
+      <button class="q-btn" onclick="flipCard()">&#8635; Flip Card</button>
+    </div>
+  </div>
+</div>
+
+<!-- INTERMISSION / QUICK BREAK -->
+<div class="screen page" id="page-humanity" style="background:rgba(4,10,28,0.6)">
+  <div style="width:100%;max-width:700px;text-align:center;padding:20px">
+    <div style="font-size:9px;letter-spacing:0.42em;text-transform:uppercase;color:var(--yellow);margin-bottom:10px">&#9829; Intermission &mdash; Quick Break</div>
+    <div style="width:36px;height:1px;background:rgba(245,215,110,0.3);margin:0 auto 22px"></div>
+    <div style="font-family:'DM Serif Display',serif;font-style:italic;font-size:clamp(22px,3.6vw,50px);font-weight:700;color:var(--white);line-height:1.2;margin-bottom:10px">
+      That One Patient.
+    </div>
+    <div style="font-size:clamp(11px,1.5vw,15px);color:var(--muted);line-height:1.8;margin-bottom:28px;max-width:500px;margin-left:auto;margin-right:auto">
+      Take a few minutes. Turn to the people around you.<br/>Every doctor has one patient they never forgot.
+    </div>
+    <div style="width:40px;height:1px;background:rgba(61,191,160,0.25);margin:0 auto 28px"></div>
+    <div style="display:flex;flex-direction:column;gap:14px;text-align:left;max-width:560px;margin:0 auto 32px">
+      <div style="background:rgba(61,191,160,0.06);border:1px solid rgba(61,191,160,0.2);padding:16px 20px;display:flex;gap:14px;align-items:flex-start">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--mint);line-height:1;flex-shrink:0">1</div>
+        <div>
+          <div style="font-size:9px;letter-spacing:0.22em;text-transform:uppercase;color:var(--mint);margin-bottom:5px">Who was the patient?</div>
+          <div style="font-size:clamp(11px,1.5vw,14px);color:var(--white);line-height:1.65">Not their diagnosis &mdash; who were they as a person? What do you remember most about them?</div>
+        </div>
+      </div>
+      <div style="background:rgba(245,215,110,0.05);border:1px solid rgba(245,215,110,0.18);padding:16px 20px;display:flex;gap:14px;align-items:flex-start">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--yellow);line-height:1;flex-shrink:0">2</div>
+        <div>
+          <div style="font-size:9px;letter-spacing:0.22em;text-transform:uppercase;color:var(--yellow);margin-bottom:5px">When did you meet them?</div>
+          <div style="font-size:clamp(11px,1.5vw,14px);color:var(--white);line-height:1.65">Where were you in your training? What was that stage of your career like?</div>
+        </div>
+      </div>
+      <div style="background:rgba(217,64,80,0.05);border:1px solid rgba(217,64,80,0.18);padding:16px 20px;display:flex;gap:14px;align-items:flex-start">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--red);line-height:1;flex-shrink:0">3</div>
+        <div>
+          <div style="font-size:9px;letter-spacing:0.22em;text-transform:uppercase;color:var(--red);margin-bottom:5px">Why will you always remember them?</div>
+          <div style="font-size:clamp(11px,1.5vw,14px);color:var(--white);line-height:1.65">What changed in how you practise, think, or care for patients because of them?</div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:8px">
+      <button onclick="goPage('game3')" style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.2em;text-transform:uppercase;padding:12px 30px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all 0.25s" onmouseover="this.style.borderColor='var(--mint)';this.style.color='var(--mint)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">
+        Continue to Game 3 &#8594;
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- GAME 3: THE GHANA CASE FILES -->
+<div class="screen page" id="page-game3">
+  <div class="g3-wrap">
+    <div class="q-level">
+      <div class="q-level-line"></div>
+      <span>Game 3 &mdash; The Ghana Case Files</span>
+      <span class="q-pts">Progressive Scoring</span>
+      <div class="q-level-line"></div>
+    </div>
+    <!-- SCORING STRIP -->
+    <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:8px">
+      <div style="font-size:8px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);padding:5px 10px;border:1px solid var(--border)">Clue 2 &#8594; <span style="color:var(--yellow)">15 pts</span></div>
+      <div style="font-size:8px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);padding:5px 10px;border:1px solid var(--border)">Clue 3 &#8594; <span style="color:var(--yellow)">12 pts</span></div>
+      <div style="font-size:8px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);padding:5px 10px;border:1px solid var(--border)">Clue 4 &#8594; <span style="color:var(--yellow)">10 pts</span></div>
+      <div style="font-size:8px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);padding:5px 10px;border:1px solid var(--border)">Clue 5 &#8594; <span style="color:var(--mint)">7 pts</span></div>
+      <div style="font-size:8px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);padding:5px 10px;border:1px solid var(--border)">Clue 6 &#8594; <span style="color:var(--mint)">5 pts</span></div>
+      <div style="font-size:8px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);padding:5px 10px;border:1px solid var(--border)">Final &#8594; <span style="color:var(--red)">2 pts</span></div>
+    </div>
+    <!-- HOST NOTE -->
+    <div style="font-size:9px;letter-spacing:0.06em;color:rgba(245,215,110,0.65);border-left:2px solid var(--yellow);padding:6px 14px;margin-bottom:10px;text-align:left;max-width:640px;margin-left:auto;margin-right:auto;background:rgba(245,215,110,0.03);font-style:italic">
+      HOST: &ldquo;Medicine rewards good thinking &mdash; not rushing. Teams, decide: do you lock in now or wait for more?&rdquo;
+    </div>
+    <!-- LOCK IN ROW -->
+    <div style="display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin-bottom:8px" id="g3-lockin-row"></div>
+    <div class="g3-volunteer">
+      &#127919; Case title: <strong id="g3-vol-name" style="color:var(--white)">THE CHURCH USHER</strong>
+      <button onclick="setVolunteer()" style="margin-left:14px;font-size:8.5px;letter-spacing:0.15em;text-transform:uppercase;padding:4px 11px;border:1px solid var(--mint);background:transparent;color:var(--mint);cursor:pointer">Set Team</button>
+    </div>
+    <div class="g3-criteria" id="g3-criteria">
+      <div class="g3-criterion">
+        <div class="g3-crit-num">1</div>
+        <div class="g3-crit-icon">&#128483;&#65039;</div>
+        <div class="g3-crit-title">The Arrival</div>
+        <div class="g3-crit-desc">A 34-year-old church usher is brought to the emergency department on a Sunday afternoon. Several congregation members arrive with him. One elderly woman keeps saying: &ldquo;Doctor, this can&apos;t be happening &mdash; he&apos;s the healthiest person I know.&rdquo; His wife agrees: &ldquo;He never misses church. He exercises. He doesn&apos;t smoke. He doesn&apos;t drink. He&apos;s never been admitted before.&rdquo; Yet today he appears confused. When staff ask simple questions, his answers don&apos;t make sense. What is your opening differential?</div>
+      </div>
+      <div class="g3-criterion">
+        <div class="g3-crit-num">2</div>
+        <div class="g3-crit-icon">&#128101;</div>
+        <div class="g3-crit-title">The History Begins</div>
+        <div class="g3-crit-desc">His wife provides more detail. Over the past few months she noticed small changes. Nothing dramatic. &ldquo;Sometimes he would suddenly become irritable &mdash; then ten minutes later, completely normal.&rdquo; &ldquo;A few times he complained of dizziness.&rdquo; &ldquo;We thought he was just tired.&rdquo; The episodes always passed. Nobody was particularly worried. Does this change your differential?</div>
+      </div>
+      <div class="g3-criterion">
+        <div class="g3-crit-num">3</div>
+        <div class="g3-crit-icon">&#9749;</div>
+        <div class="g3-crit-title">The Church Elder</div>
+        <div class="g3-crit-desc">One of the church elders steps forward. &ldquo;Doctor, there is something else. Last month during a meeting he became confused. He started speaking strangely. We thought he was joking. Then he asked where he was. Five minutes later he was completely normal.&rdquo; No investigations were done. Life continued. What is your differential now?</div>
+      </div>
+      <div class="g3-criterion">
+        <div class="g3-crit-num">4</div>
+        <div class="g3-crit-icon">&#127850;</div>
+        <div class="g3-crit-title">The Small Detail</div>
+        <div class="g3-crit-desc">His wife suddenly remembers something. &ldquo;Actually &mdash; he&apos;s been eating all the time.&rdquo; &ldquo;He carries biscuits everywhere.&rdquo; &ldquo;He keeps snacks in his car.&rdquo; &ldquo;If he doesn&apos;t eat regularly he feels awful.&rdquo; &ldquo;We used to tease him about it.&rdquo; This detail is critical. What does it suggest?</div>
+      </div>
+      <div class="g3-criterion">
+        <div class="g3-crit-num">5</div>
+        <div class="g3-crit-icon">&#128300;</div>
+        <div class="g3-crit-title">The Blood Result</div>
+        <div class="g3-crit-desc">Blood results arrive. The nurse hands over the report. The emergency physician looks surprised. Blood glucose: <strong style="color:var(--red)">1.8 mmol/L</strong> &mdash; severe hypoglycaemia. Does this confirm or complicate your diagnosis?</div>
+      </div>
+      <div class="g3-criterion">
+        <div class="g3-crit-num">6</div>
+        <div class="g3-crit-icon">&#128138;</div>
+        <div class="g3-crit-title">The Twist</div>
+        <div class="g3-crit-desc">A junior doctor asks: &ldquo;Has he been taking any diabetic medication?&rdquo; His wife answers: &ldquo;No. He has never been diagnosed with diabetes.&rdquo; No insulin. No diabetic tablets. No known endocrine history. Nothing. Now &mdash; what is your final diagnosis?</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:14px;justify-content:center;margin-top:12px;align-items:center;flex-wrap:wrap">
+      <div style="text-align:center">
+        <div class="timer-num safe" id="g3-timer" style="font-size:clamp(38px,5.5vw,76px)">300</div>
+        <div class="timer-bar-track" style="width:190px"><div class="timer-bar-fill" id="g3-bar" style="width:100%"></div></div>
+        <div class="timer-label" id="g3-timer-label">Discussion &mdash; 5 mins</div>
+      </div>
+    </div>
+    <div class="q-nav">
+      <button class="g3-reveal-btn" onclick="g3RevealNext()">Reveal Next Clue &#8594;</button>
+      <button class="q-btn" onclick="startTimer('g3',300);document.getElementById('g3-timer-label').textContent='Discussion \u2014 5 mins'">&#9654; 5 Min</button>
+      <button class="q-btn reveal" onclick="startTimer('g3',90);document.getElementById('g3-timer-label').textContent='Presenting \u2014 90s'" style="background:var(--red);border-color:var(--red)">&#9654; 90s Present</button>
+      <button class="q-btn" onclick="resetTimer('g3',300);resetG3()">&#8634; Reset</button>
+    </div>
+    <div id="g3-answer-box" style="display:none;margin-top:12px">
+      <div class="answer-reveal">
+        <div class="answer-reveal-label">&#10010; Diagnosis &amp; Host Discussion</div>
+        <div class="answer-reveal-text"><strong style="color:var(--yellow)">INSULINOMA</strong> &mdash; a pancreatic tumour producing insulin endogenously, causing episodic hypoglycaemia in a non-diabetic patient.</div>
+        <div class="answer-insight">
+          <span class="answer-insight-label">&#128172; Host Discussion Points</span>
+          Ask: Which clue changed your thinking? Which single detail mattered most? Who suspected an endocrine cause early? The snack-carrying behaviour (Clue 4) is the tell &mdash; it represents the patient&apos;s unconscious self-treatment. The classic Whipple&apos;s Triad: symptomatic hypoglycaemia, glucose below 2.5 mmol/L, relief with glucose administration.
+        </div>
+        <div class="answer-fact">
+          <span class="answer-fact-label">&#128161; Clinical Note</span>
+          Insulinoma is rare (1&ndash;4 per million per year) but is the most common functional pancreatic neuroendocrine tumour. 90% are benign and solitary. Surgical resection is curative in most cases. The diagnosis is often delayed by months or years because episodes are intermittent and self-resolving.
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:8px">
+      <button class="q-btn reveal" onclick="var b=document.getElementById('g3-answer-box');b.style.display=b.style.display==='none'?'block':'none'">Show/Hide Diagnosis</button>
+    </div>
+  </div>
+</div>
+
+<!-- TIEBREAKER -->
+<div class="screen page" id="page-tiebreaker">
+  <div style="width:100%;max-width:800px">
+    <div class="q-level">
+      <div class="q-level-line" style="background:var(--red);opacity:0.5"></div>
+      <span style="color:var(--red)">Tiebreaker</span>
+      <span class="q-pts" style="color:var(--red)">First correct answer wins</span>
+      <div class="q-level-line" style="background:var(--red);opacity:0.5"></div>
+    </div>
+    <div class="tb-badge">&#9889; Speed Round &mdash; Buzz In First</div>
+    <div class="q-dots" id="tb-dots"></div>
+    <div class="tb-q-text" id="tb-text">Ready for the tiebreaker?</div>
+    <div id="tb-answer-box" style="display:none">
+      <div class="answer-reveal" style="border-color:rgba(217,64,80,0.28);background:rgba(217,64,80,0.06)">
+        <div class="answer-reveal-label" style="color:var(--red)">&#10010; Answer</div>
+        <div class="answer-reveal-text" id="tb-answer-text"></div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;margin-top:14px">
+      <div class="timer-num safe" id="tb-timer">20</div>
+      <div class="timer-bar-track"><div class="timer-bar-fill" id="tb-bar" style="width:100%"></div></div>
+      <div class="timer-label">seconds</div>
+    </div>
+    <div class="q-nav">
+      <button class="q-btn" onclick="tbPrev()">&#8592; Prev</button>
+      <button class="q-btn" onclick="tbReveal()" style="border-color:var(--red);background:var(--red);color:white">Reveal Answer</button>
+      <button class="q-btn" onclick="startTimer('tb',20)">&#9654; 20s Timer</button>
+      <button class="q-btn" onclick="resetTimer('tb',20)">&#8634; Reset</button>
+      <button class="q-btn" onclick="tbNext()">Next &#8594;</button>
+    </div>
+    <div class="q-counter" id="tb-counter">Question 1 of 5</div>
+  </div>
+</div>
+
+<!-- GRAND FINALE -->
+<div class="screen page" id="page-finale" style="overflow:auto;justify-content:center">
+  <div style="width:100%;max-width:820px;padding:20px 0;text-align:center">
+    <div style="display:flex;justify-content:center;margin-bottom:28px">
+      <svg width="160" height="46" viewBox="0 0 180 52" xmlns="http://www.w3.org/2000/svg">
+        <path class="ecg-path" d="M 0 26 L 28 26 L 34 26 L 38 5 L 46 47 L 52 26 L 72 26 L 78 18 L 84 26 L 118 26 L 124 26 L 128 5 L 136 47 L 142 26 L 162 26 L 168 18 L 174 26 L 180 26" fill="none" stroke="#3DBFA0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div style="font-size:9px;letter-spacing:0.38em;text-transform:uppercase;color:var(--mint);margin-bottom:22px" id="finale-winner-label"></div>
+    <div style="font-family:'DM Serif Display',serif;font-style:italic;font-size:clamp(13px,2.4vw,28px);font-weight:700;color:var(--white);line-height:1.75;margin-bottom:32px" id="finale-lines"></div>
+    <div style="width:60px;height:1px;background:rgba(245,215,110,0.25);margin:0 auto 28px"></div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(22px,4vw,52px);letter-spacing:0.08em;color:var(--yellow);line-height:1.05;margin-bottom:4px">Gold Coast Games</div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(14px,2.4vw,32px);letter-spacing:0.12em;color:var(--white);margin-bottom:10px">Doctors Night</div>
+    <div style="font-size:9px;letter-spacing:0.22em;text-transform:uppercase;color:var(--muted)">Celebrating the people behind the profession.</div>
+    <div style="margin-top:22px">
+      <button onclick="setWinner()" style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.18em;text-transform:uppercase;padding:10px 22px;border:1px solid var(--yellow);background:transparent;color:var(--yellow);cursor:pointer;margin-right:8px">&#10010; Set Winner</button>
+      <button onclick="buildFinale()" style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.18em;text-transform:uppercase;padding:10px 22px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer">&#9654; Play Tribute</button>
+    </div>
+  </div>
+</div>
+
+<!-- GOODBYE PAGE -->
+<div class="screen page" id="page-goodbye" style="overflow:auto;justify-content:flex-start;padding-top:80px;padding-bottom:80px">
+  <div style="width:100%;max-width:720px;text-align:center;padding:20px">
+
+    <!-- Header -->
+    <div style="font-size:9px;letter-spacing:0.4em;text-transform:uppercase;color:var(--mint);margin-bottom:28px">&#10010; Gold Coast Games &middot; Doctors Night &middot; 4th June 2026</div>
+
+    <!-- Main farewell -->
+    <div style="font-family:'DM Serif Display',serif;font-style:italic;font-size:clamp(28px,5vw,68px);font-weight:700;color:var(--yellow);line-height:1;margin-bottom:32px">
+      Tonight was<br/>about you.
+    </div>
+
+    <div style="font-family:'DM Serif Display',serif;font-style:italic;font-size:clamp(16px,2.4vw,28px);color:var(--white);line-height:1.9;margin-bottom:20px">
+      Thank you for the long hours.<br/>
+      Thank you for the sacrifices.<br/>
+      Thank you for the lives you&apos;ve touched.<br/>
+      Thank you for keeping the rest of us alive.
+    </div>
+
+    <div style="font-family:'DM Serif Display',serif;font-style:italic;font-size:clamp(14px,2vw,22px);color:var(--mint);line-height:1.8;margin-bottom:32px">
+      And please&hellip;<br/>
+      Prescribe yourselves a chill pill once in a while.
+    </div>
+
+    <div style="width:48px;height:1px;background:rgba(245,215,110,0.2);margin:0 auto 28px"></div>
+
+    <!-- Connection message -->
+    <div style="font-size:clamp(12px,1.8vw,17px);color:var(--muted);line-height:1.9;margin-bottom:10px;letter-spacing:0.03em">
+      If you&apos;ve enjoyed a conversation tonight,<br/>
+      don&apos;t let it end here.<br/>
+      Swap contacts. Stay connected.<br/>
+      Keep building the community.
+    </div>
+
+    <div style="font-family:'DM Serif Display',serif;font-style:italic;font-size:clamp(12px,1.6vw,16px);color:rgba(245,215,110,0.55);margin-bottom:36px;line-height:1.7">
+      And please go get some sleep before you start<br/>diagnosing your Uber driver on the way home.
+    </div>
+
+    <div style="width:48px;height:1px;background:rgba(61,191,160,0.2);margin:0 auto 32px"></div>
+
+    <!-- Social media section -->
+    <div style="font-size:9px;letter-spacing:0.32em;text-transform:uppercase;color:var(--yellow);margin-bottom:20px">Stay Connected</div>
+
+    <!-- Instagram -->
+    <div style="background:rgba(61,191,160,0.06);border:1px solid rgba(61,191,160,0.18);padding:18px 24px;margin-bottom:10px;text-align:left">
+      <div style="display:flex;align-items:flex-start;gap:16px">
+        <div style="font-size:26px;line-height:1;margin-top:2px">&#128247;</div>
+        <div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:0.1em;color:var(--mint);margin-bottom:4px">Instagram</div>
+          <div style="font-size:clamp(11px,1.5vw,14px);color:var(--white);margin-bottom:4px;font-weight:500">@goldcoastgames_gh</div>
+          <div style="font-size:clamp(9px,1.3vw,12px);color:var(--muted);line-height:1.65">Photos and videos from tonight will be posted here. Tag us if you share anything from the evening.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Facebook -->
+    <div style="background:rgba(245,215,110,0.05);border:1px solid rgba(245,215,110,0.15);padding:18px 24px;margin-bottom:28px;text-align:left">
+      <div style="display:flex;align-items:flex-start;gap:16px">
+        <div style="font-size:26px;line-height:1;margin-top:2px">&#128081;</div>
+        <div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:0.1em;color:var(--yellow);margin-bottom:4px">Facebook &mdash; We&apos;re New Here</div>
+          <div style="font-size:clamp(11px,1.5vw,14px);color:var(--white);margin-bottom:4px;font-weight:500">Gold Coast Games Ghana</div>
+          <div style="font-size:clamp(9px,1.3vw,12px);color:var(--muted);line-height:1.65">Our Facebook page is brand new. If you enjoyed tonight, a follow means everything right now. We&apos;re building something for doctors, lawyers, nurses, creatives &mdash; even mechanics. Help us reach them.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Share ask -->
+    <div style="background:rgba(217,64,80,0.05);border:1px solid rgba(217,64,80,0.15);padding:16px 24px;margin-bottom:32px">
+      <div style="font-size:clamp(12px,1.7vw,16px);color:var(--white);line-height:1.8">
+        Know someone who would love this?<br/>
+        <span style="color:var(--yellow)">A lawyer. A nurse. A friend who works too hard.</span><br/>
+        Share the page. Send the link.<br/>
+        Every great community starts with one person saying<br/><em style="color:var(--mint)">&ldquo;you have to come to this.&rdquo;</em>
+      </div>
+    </div>
+
+    <!-- Sign off -->
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(20px,3.5vw,42px);letter-spacing:0.1em;color:var(--yellow);margin-bottom:4px">Gold Coast Games</div>
+    <div style="font-size:9px;letter-spacing:0.28em;text-transform:uppercase;color:var(--muted);margin-bottom:24px">Curated experiences. Intentional connection. Built in Ghana.</div>
+
+    <button onclick="goPage('home')" style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.2em;text-transform:uppercase;padding:12px 28px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all 0.25s" onmouseover="this.style.borderColor='var(--mint)';this.style.color='var(--mint)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">
+      &#8592; Back to Home
+    </button>
+  </div>
+</div>
+
+<!-- SCORE BAR -->
+<div class="score-bar">
+  <div id="score-teams"></div>
+  <div class="score-reset" onclick="if(confirm('Reset all scores?'))resetScores()">Reset</div>
+</div>
+<div class="score-edit-hint">Tap score to +1 &middot; Double-tap name to rename</div>
+
+<!-- WHISPER -->
+<div class="whisper" id="whisper">
+  <div class="whisper-text" id="whisper-text"></div>
+  <div class="whisper-close" onclick="document.getElementById('whisper').classList.remove('show')">Close &#10005;</div>
+</div>
+
+<script>
+// ===== GAME 1 DATA =====
+const questions=[
+  // Q1 — THE TROTRO TEST
+  {level:"Doctor, What Would You Do?",pts:"1 pt",
+   q:"THE TROTRO TEST \u2014 A passenger suddenly collapses during a packed Accra\u2013Kumasi trotro journey. Everyone immediately begins shouting, \u201cDoctor! Doctor!\u201d What is the FIRST thing an experienced doctor should establish?",
+   a:"Responsiveness",
+   insight:"Also accepted: Consciousness \u00b7 Is the patient responsive? \u00b7 ABCs \u00b7 Airway, Breathing, Circulation. Before diagnosing anything, doctors first determine whether the patient is responsive and immediately assess basic life support priorities."},
+
+  // Q2 — THE MAKOLA MARKET WOMAN
+  {level:"Doctor, What Would You Do?",pts:"1 pt",
+   q:"THE MAKOLA MARKET WOMAN \u2014 A 55-year-old trader from Makola Market says: \u201cDoctor, I\u2019m always thirsty.\u201d She also wakes up several times every night to urinate. What diagnosis should immediately come to mind?",
+   a:"Type 2 Diabetes Mellitus",
+   insight:"Also accepted: Diabetes \u00b7 Diabetes Mellitus \u00b7 Type 2 Diabetes. The combination of excessive thirst and frequent urination is a classic presentation of diabetes."},
+
+  // Q3 — THE MOST EXPENSIVE QUESTION IN MEDICINE
+  {level:"Doctor, What Would You Do?",pts:"1 pt",
+   q:"THE MOST EXPENSIVE QUESTION IN MEDICINE \u2014 Every doctor has answered it. Very few doctors have ever been paid for it. What question is responsible for the greatest number of free medical consultations in history?",
+   a:"Reveal one at a time \u2192\n\n1\ufe0f\u20e3  \u201cAre you a doctor?\u201d\n2\ufe0f\u20e3  \u201cYou\u2019re a doctor, right?\u201d\n3\ufe0f\u20e3  \u201cDoctor\u2026 please, just one quick question\u2026\u201d",
+   insight:"HOST: Reveal each line one at a time after the timer. Accept any wording that clearly captures the same idea. \u201cCollectively responsible for millions of unpaid consultations worldwide.\u201d"},
+
+  // Q4 — ANATOMY NEVER DIES
+  {level:"Doctor, What Would You Do?",pts:"1 pt",
+   q:"ANATOMY NEVER DIES \u2014 Name ONE carpal bone.",
+   a:"Scaphoid \u00b7 Lunate \u00b7 Triquetrum \u00b7 Pisiform \u00b7 Trapezium \u00b7 Trapezoid \u00b7 Capitate \u00b7 Hamate",
+   insight:"Accept any one of the eight bones listed above. First team to raise their board with any correct carpal bone earns the point."},
+
+  // Q5 — MEDICAL SCHOOL SURVIVORS
+  {level:"Doctor, What Would You Do?",pts:"1 pt",
+   q:"MEDICAL SCHOOL SURVIVORS \u2014 Finish this famous medical mnemonic:\n\n\u201cSome Lovers Try Positions\u2026\u201d",
+   a:"\u201cThat They Can\u2019t Handle\u201d",
+   insight:"A classic mnemonic for remembering the twelve cranial nerves. Almost every doctor in the room will know this one \u2014 or pretend they do."},
+
+  // Q6 — THE GOOGLE PARADOX
+  {level:"Doctor, What Would You Do?",pts:"1 pt",
+   q:"THE GOOGLE PARADOX \u2014 A patient spends six hours researching symptoms online before seeing a doctor. What serious diagnosis have they usually already convinced themselves they have?",
+   choices:["A.  Malaria","B.  Typhoid","C.  Cancer","D.  Meningitis"],
+   a:"C. Cancer",
+   insight:"Also accepted: Brain tumour \u00b7 Tumour. Doctors everywhere note that internet searches reliably convince patients they have cancer before they\u2019ve had a single examination."},
+
+  // Q8 — THE DANGEROUS IMPROVEMENT
+  {level:"Doctor, What Would You Do?",pts:"1 pt",
+   q:"THE DANGEROUS IMPROVEMENT \u2014 A critically ill patient suddenly says, \u201cDoctor\u2026 I actually feel much better now.\u201d Why might an experienced doctor become MORE worried?",
+   choices:["A.  The illness is definitely over.","B.  The patient may be about to deteriorate suddenly.","C.  The medication has fully cured them.","D.  They can safely go home."],
+   a:"B. The patient may be about to deteriorate suddenly.",
+   insight:"Also accepted: Impending deterioration \u00b7 Patient may crash \u00b7 Decompensation. A sudden improvement in a critically ill patient can signal decompensation rather than recovery."},
+
+  // Q9 — THE CONSULTANT\u2019S SUPERPOWER
+  {level:"Doctor, What Would You Do?",pts:"1 pt",
+   q:"THE CONSULTANT\u2019S SUPERPOWER \u2014 A consultant enters the room. Looks at a patient for ten seconds. Asks one question. Gets the diagnosis right. What skill are junior doctors witnessing?",
+   choices:["A.  Luck","B.  Pattern Recognition","C.  Guesswork","D.  Fast typing"],
+   a:"B. Pattern Recognition",
+   insight:"Also accepted: Clinical judgement \u00b7 Clinical experience. Years of exposure allow consultants to recognise disease patterns rapidly \u2014 something that develops only with time."},
+
+  // Q10 — THE SILENT KILLER
+  {level:"Doctor, What Would You Do?",pts:"1 pt",
+   q:"THE SILENT KILLER \u2014 Which common disease is widely known as \u201cThe Silent Killer\u201d?",
+   choices:["A.  Asthma","B.  Hypertension","C.  Tuberculosis","D.  Diabetes"],
+   a:"B. Hypertension",
+   insight:"Hypertension causes serious organ damage \u2014 heart failure, stroke, kidney disease \u2014 long before symptoms appear. Ghana has one of the highest rates of undiagnosed hypertension in sub-Saharan Africa."},
+
+  // Q11 — THE MISSING DIAGNOSIS (Bonus)
+  {level:"Bonus \u2014 The Missing Diagnosis",pts:"1 pt",
+   q:"THE MISSING DIAGNOSIS \u2014 A patient has seen five doctors. Had numerous investigations. Received several treatments. Yet still has no diagnosis. What is often the most valuable next step?",
+   choices:["A.  Repeat the CT scan.","B.  Order more blood tests.","C.  Take the history again.","D.  Start another medication."],
+   a:"C. Take the history again.",
+   insight:"Also accepted: Repeat the history \u00b7 Listen again \u00b7 Revisit the history. A careful history remains one of the most powerful diagnostic tools in medicine."},
+];
+
+// ===== GAME 2 DATA =====
+const hotTakes=[
+  {num:"01",title:"THE BIG DECISION",
+   take:'"If a Ghanaian doctor moves abroad tomorrow, have they abandoned Ghana \u2014 or made a rational decision?"',
+   options:null,
+   tip:"Host: This will divide the room fast. Don\u2019t let it stay abstract \u2014 push for personal stories. Ask: have you considered leaving? If you stayed, what made you stay?",
+   followUp:"Would you still feel the same if your own child was graduating from medical school next year?"},
+  {num:"02",title:"THE BIGGEST LIE IN MEDICINE",
+   take:'"Which statement has caused the most suffering for doctors?"',
+   options:['A.  \u201cIt\u2019ll only take one minute.\u201d','B.  \u201cI followed all the instructions.\u201d','C.  \u201cI\u2019ve only had this symptom since this morning.\u201d','D.  \u201cI don\u2019t normally Google my symptoms.\u201d'],
+   tip:"Host: Award persuasion to whoever gives the most painfully relatable story. Watch the room react \u2014 every option will produce recognition from someone.",
+   followUp:"Which one would you say has caused the most actual clinical harm?"},
+  {num:"03",title:"TRUTH AND TRUST",
+   take:'"Doctors should always tell patients when mistakes have been made."',
+   options:null,
+   tip:"Host: Quieter card. Produces the most honest conversation. Watch the senior doctors carefully. Ask: what has actually happened in your experience? Push for real stories over abstract positions.",
+   followUp:"Has a system ever made honesty harder than it should be?"},
+  {num:"04",title:"THE FUTURE OF MEDICINE",
+   take:'"Traditional medicine and modern medicine should collaborate more often."',
+   options:null,
+   tip:"Host: Highly relevant in Ghana. Best arguments balance evidence-based practice with cultural intelligence. Don\u2019t let it collapse into ideology \u2014 push for specific, practical examples of collaboration.",
+   followUp:"What would a genuinely useful collaboration actually look like in a Ghanaian hospital setting?"},
+  {num:"05",title:"THE CHILD QUESTION",
+   take:'"Would you encourage your own child to become a doctor today?"',
+   options:null,
+   tip:"Host: One of the strongest reflective cards. Personal, emotional, honest. Let it breathe. Don\u2019t rush. The room will go somewhere real if you give it space.",
+   followUp:"What would need to change about the system before your answer changed?"},
+  {num:"06",title:"THE NATIONAL CONSULTATION SERVICE",
+   take:'"Where are doctors most likely to receive an unsolicited medical consultation request?"',
+   options:['Wedding','Funeral','Church / Mosque','Family gathering','Airport','Trotro station'],
+   tip:"Host: After teams present, ask: \u201cWho has the best story?\u201d This card is pure community. Let people share. Award persuasion to the funniest or most vivid story with a genuine insight.",
+   followUp:"Who has the best story from any of those situations?"},
+  {num:"07",title:"BURNOUT",
+   take:'"Is burnout primarily an individual problem \u2014 or a healthcare system problem?"',
+   options:null,
+   tip:"Host: This card can become a complaint session. Redirect: what would a well-designed system actually look like? Who has seen it done right? Push for practical thinking over venting.",
+   followUp:"What is one practical change that could reduce burnout tomorrow \u2014 not eventually, tomorrow?"},
+  {num:"08",title:"THE DOCTOR\u2019S SECRET",
+   take:'"What is one thing the public most misunderstands about doctors?"',
+   options:null,
+   tip:"Host: Excellent closer. Funny, insightful, and reflective. Award persuasion to whoever is most honest and specific rather than most flattering to the profession. The best answers are vulnerable.",
+   followUp:"If you could change one public perception about doctors overnight, what would it be?"},
+];
+
+// ===== TIEBREAKER DATA =====
+const tbQuestions=[
+  {q:"Which contributes to more deaths globally: malaria or hypertension-related disease?",
+   a:"Hypertension-related disease. Cardiovascular disease driven by uncontrolled hypertension kills approximately 10 million people annually. Malaria kills approximately 600,000 \u2014 predominantly children under five. Both are serious. The scale is very different."},
+  {q:"Which condition is known as the Silent Killer?",
+   a:"Hypertension. It causes no symptoms until organ damage is already occurring \u2014 heart failure, stroke, kidney failure, retinopathy. Ghana has one of the highest rates of undiagnosed hypertension in sub-Saharan Africa."},
+  {q:"Which is more dangerous to miss in the first hour \u2014 sepsis or the common cold?",
+   a:"Sepsis. For every hour without antibiotics and fluid resuscitation, mortality increases by approximately 7%. The common cold is self-limiting. Sepsis can kill within hours."},
+  {q:"Approximately how much blood does the average adult human body contain?",
+   a:"Approximately 5 litres \u2014 about 7\u20138% of body weight. Loss of more than 1.5 litres constitutes Class III haemorrhagic shock. Loss of 2+ litres is immediately life-threatening without intervention."},
+  {q:"Which single skill becomes increasingly more valuable as a doctor becomes more senior?",
+   a:"Clinical judgement \u2014 the ability to synthesise incomplete information, manage uncertainty, and make sound decisions under pressure. It is built through observation, reflection, and experience. No textbook can teach it directly."},
+];
+
+// ===== FINALE DATA =====
+const finaleLines=[
+  "Thank you for the long nights.",
+  "Thank you for the sacrifices.",
+  "Thank you for the difficult decisions.",
+  "Thank you for the patients you carry with you.",
+  "Thank you for choosing medicine.",
+  "Ghana is better because you did."
+];
+
+// ===== STATE =====
+let g1Current=0;
+let g1Stage=0; // 0=ready 1=think 2=discuss 3=lock 4=result
+let g2Stage=0;
+let g2CurrentCard=null,g2CardUsed=[];
+let g2Predictions={},g2PredLocked={};
+let g2PresentTeam=0;
+let g3Revealed=0;
+let tbCurrent=0;
+let timers={g1:null,g2:null,g3:null,tb:null};
+let timerVals={g1:30,g2:60,g3:300,tb:20};
+let timerMax={g1:30,g2:60,g3:300,tb:20};
+let timerCallbacks={g1:null,g2:null,g3:null,tb:null};
+let scores=[0,0,0,0];
+let teamNames=["Team 1","Team 2","Team 3","Team 4"];
+
+// ===== INIT =====
+function init(){
+  buildQDots();loadQ(0);
+  buildCardSelector();
+  buildScoreBar();
+  buildTbDots();loadTb(0);
+}
+
+// ===== NAVIGATION =====
+function goPage(id){
+  // Start ambient on first any navigation (requires user gesture)
+  if(soundEnabled)startAmbient();
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  const labels={
+    home:'4th June \u00b7 Dzorwulu, Accra',
+    game1:'Game 1 \u00b7 Doctor, What Would You Do?',
+    game2:'Game 2 \u00b7 The Doctors\u2019 Lounge',
+    humanity:'Intermission \u00b7 Quick Break',
+    game3:'Game 3 \u00b7 The Ghana Case Files',
+    tiebreaker:'Tiebreaker \u00b7 Speed Round',
+    finale:'Grand Finale \u00b7 Doctors Night',
+    goodbye:'Goodbye \u00b7 See You Next Time'
+  };
+  document.getElementById('topGameLabel').textContent=labels[id]||'';
+  document.querySelectorAll('.nav-btn').forEach(b=>{
+    b.classList.remove('active');
+    const t=b.textContent.toLowerCase();
+    if((id==='home'&&t.includes('home'))||(id==='game1'&&t.includes('game 1'))||
+       (id==='game2'&&t.includes('game 2'))||(id==='humanity'&&t.includes('humanity'))||
+       (id==='game3'&&t.includes('game 3'))||(id==='tiebreaker'&&t.includes('tiebreaker'))||
+       (id==='finale'&&t.includes('finale'))||(id==='goodbye'&&t.includes('goodbye')))
+      b.classList.add('active');
+  });
+  if(id==='finale')setTimeout(buildFinale,120);
+  if(id==='game3')buildLockInRow();
+}
+
+// ===== GAME 1 =====
+const G1_STAGES={
+  0:{badge:null, cls:'',  label:'',                     hint:'Press Begin Question to start the clock'},
+  1:{badge:'THINK',   cls:'think',   label:'Each doctor thinks individually — no discussion yet', hint:'Next \u2192 Discuss (45s)'},
+  2:{badge:'DISCUSS', cls:'discuss', label:'Agree on one final team answer',                      hint:'Next \u2192 Lock Answer (10s)'},
+  3:{badge:'LOCK',    cls:'lock',    label:'Captain submits the team\u2019s final answer',         hint:'Next \u2192 Reveal'},
+  4:{badge:'RESULT',  cls:'result',  label:'Award +1 point if correct \u2014 then move on',       hint:''},
+};
+
+function g1SetStage(n){
+  g1Stage=n;
+  const s=G1_STAGES[n];
+  const badge=document.getElementById('g1-stage-badge');
+  const instr=document.getElementById('g1-stage-instruction');
+  const hint=document.getElementById('g1-next-hint');
+  if(s.badge){
+    badge.textContent=s.badge;
+    badge.className='stage-badge '+s.cls;
+    badge.style.display='inline-block';
+  } else {
+    badge.style.display='none';
+  }
+  instr.textContent=s.label;
+  if(hint) hint.textContent=s.hint;
+  [0,1,2,3,4].forEach(i=>{
+    const el=document.getElementById('g1-ctrl-'+i);
+    if(el) el.style.display=(i===n)?'flex':'none';
+  });
+  // Hide answer box when resetting to earlier stages
+  if(n<4) document.getElementById('answer-box').style.display='none';
+}
+
+function buildQDots(){
+  const wrap=document.getElementById('q-dots');wrap.innerHTML='';
+  questions.forEach((_,i)=>{
+    const d=document.createElement('div');
+    d.className='q-dot'+(i===g1Current?' current':'');
+    d.onclick=()=>loadQ(i);
+    wrap.appendChild(d);
+  });
+}
+
+function loadQ(idx){
+  g1Current=idx;
+  const q=questions[idx];
+  document.getElementById('q-text').textContent=q.q;
+  document.getElementById('g1-pts').textContent=q.pts;
+  document.getElementById('answer-box').style.display='none';
+  document.getElementById('q-counter').textContent='Question '+(idx+1)+' of '+questions.length;
+  resetTimer('g1',10);
+  document.getElementById('g1-timer-label').textContent='Think — 10s';
+  document.querySelectorAll('#q-dots .q-dot').forEach((d,i)=>{
+    d.className='q-dot'+(i<idx?' done':'')+(i===idx?' current':'');
+  });
+  const cw=document.getElementById('q-choices');
+  if(q.choices&&q.choices.length){
+    cw.innerHTML=q.choices.map(c=>'<div class="q-choice">'+c+'</div>').join('');
+    cw.style.display='grid';
+  } else {
+    cw.innerHTML='';cw.style.display='none';
+  }
+  g1SetStage(0);
+}
+
+function g1StartThink(){
+  g1SetStage(1);
+  document.getElementById('g1-timer-label').textContent='Think \u2014 10s';
+  startTimer('g1',10,()=>g1GoDiscuss());
+}
+
+function g1GoDiscuss(){
+  g1SetStage(2);
+  document.getElementById('g1-timer-label').textContent='Discuss \u2014 45s';
+  startTimer('g1',45);
+}
+
+function g1GoLock(){
+  g1SetStage(3);
+  document.getElementById('g1-timer-label').textContent='Lock \u2014 10s';
+  startTimer('g1',10);
+}
+
+function g1Reveal(){
+  playReveal();
+  const q=questions[g1Current];
+  document.getElementById('answer-box').style.display='block';
+  document.getElementById('answer-text').innerHTML=q.a.replace(/\n/g,'<br>');
+  const ib=document.getElementById('answer-insight-block');
+  const fb=document.getElementById('answer-fact-block');
+  if(q.insight){document.getElementById('answer-insight-text').textContent=q.insight;ib.style.display='block';}
+  else{ib.style.display='none';}
+  if(q.fact){document.getElementById('answer-fact-text').textContent=q.fact;fb.style.display='block';}
+  else{fb.style.display='none';}
+  if(q.choices&&q.a){
+    const correctLetter=q.a.trim().charAt(0).toUpperCase();
+    document.querySelectorAll('#q-choices .q-choice').forEach(el=>{
+      if(el.textContent.trim().charAt(0).toUpperCase()===correctLetter)el.classList.add('highlight');
+    });
+  }
+  stopTimer('g1');
+  g1SetStage(4);
+}
+
+function g1Next(){if(g1Current<questions.length-1)loadQ(g1Current+1);}
+function g1Prev(){if(g1Current>0)loadQ(g1Current-1);}
+
+// ===== GAME 2 =====
+const G2_STAGES={
+  1:{badge:'THINK',   cls:'think',   label:'Your personal opinion — no discussion yet',      timer:15},
+  2:{badge:'DISCUSS', cls:'discuss', label:'Share views and agree on your team position',     timer:60},
+  3:{badge:'LOCK',    cls:'lock',    label:'Predict what the ROOM MAJORITY will decide',      timer:15},
+  4:{badge:'PRESENT', cls:'present', label:'One spokesperson — make the strongest argument',  timer:60},
+  5:{badge:'RESULT',  cls:'result',  label:'Award points — then select the next card',        timer:0},
+};
+
+function g2SetStage(n){
+  g2Stage=n;
+  const s=G2_STAGES[n];
+  const badge=document.getElementById('g2-stage-badge');
+  const instr=document.getElementById('g2-stage-instruction');
+  if(s){
+    badge.textContent=s.badge;
+    badge.className='stage-badge '+s.cls;
+    badge.style.display='inline-block';
+    instr.textContent=s.label;
+  }
+  [1,2,3,4,5].forEach(i=>{
+    const el=document.getElementById('g2-stage-'+i);
+    if(el) el.style.display=(i===n)?'flex':'none';
+  });
+  if(n===3) g2BuildPredPanel();
+  if(n===4) g2BuildPresentPanel();
+  if(n===5) g2BuildJudgePanel();
+}
+
+function buildCardSelector(){
+  const wrap=document.getElementById('card-selector');wrap.innerHTML='';
+  hotTakes.forEach((ht,i)=>{
+    const btn=document.createElement('button');
+    btn.className='card-sel-btn';
+    btn.textContent='Card '+ht.num;
+    btn.onclick=()=>selectCard(i,btn);
+    wrap.appendChild(btn);
+  });
+}
+
+function selectCard(idx,btn){
+  if(g2CardUsed.includes(idx))return;
+  playSwoosh();
+  g2CurrentCard=idx;
+  const ht=hotTakes[idx];
+  document.getElementById('g2-card-num').textContent='Card '+ht.num;
+  document.getElementById('g2-card-take').textContent=ht.take;
+  document.getElementById('g2-card-tip').textContent=ht.tip;
+  const optWrap=document.getElementById('g2-card-options');
+  if(ht.options&&ht.options.length){
+    optWrap.innerHTML=ht.options.map(o=>'<div class="g2-card-option">'+o+'</div>').join('');
+    optWrap.style.display='block';
+  } else {
+    optWrap.innerHTML='';optWrap.style.display='none';
+  }
+  g2CardUsed.push(idx);
+  document.querySelectorAll('.card-sel-btn').forEach((b,i)=>{
+    b.classList.remove('active');
+    if(g2CardUsed.includes(i))b.classList.add('used');
+  });
+  btn.classList.add('active');
+  const flip=document.getElementById('card-flip');
+  flip.classList.remove('flipped');
+  setTimeout(()=>flip.classList.add('flipped'),100);
+  g2Predictions={};g2PredLocked={};g2PresentTeam=0;
+  document.getElementById('g2-followup-wrap').style.display='none';
+  document.getElementById('g2-timer-wrap').style.display='block';
+  document.getElementById('g2-stage-badge').style.display='none';
+  document.getElementById('g2-stage-instruction').textContent='';
+  // Reset all stages hidden
+  [1,2,3,4,5].forEach(i=>{const el=document.getElementById('g2-stage-'+i);if(el)el.style.display='none';});
+  // Go straight to THINK
+  g2GoThink();
+}
+
+function flipCard(){playSwoosh();document.getElementById('card-flip').classList.toggle('flipped');}
+
+function g2GoThink(){
+  g2SetStage(1);
+  document.getElementById('g2-timer-label').textContent='Think \u2014 15s';
+  startTimer('g2',15,()=>g2GoDiscuss());
+}
+
+function g2GoDiscuss(){
+  g2SetStage(2);
+  document.getElementById('g2-timer-label').textContent='Discuss \u2014 60s';
+  startTimer('g2',60);
+}
+
+function g2GoLock(){
+  g2SetStage(3);
+  document.getElementById('g2-timer-label').textContent='Lock \u2014 15s';
+  startTimer('g2',15);
+}
+
+function g2GoPresent(){
+  g2SetStage(4);
+  g2PresentTeam=0;
+  g2UpdatePresentDisplay();
+  document.getElementById('g2-followup-wrap').style.display='block';
+  const ht=hotTakes[g2CurrentCard];
+  if(ht&&ht.followUp){document.getElementById('g2-followup-text').textContent=ht.followUp;}
+}
+
+function g2GoJudge(){
+  g2SetStage(5);
+  stopTimer('g2');
+  document.getElementById('g2-timer-label').textContent='\u2014';
+}
+
+function g2BuildPredPanel(){
+  const wrap=document.getElementById('g2-pred-teams');wrap.innerHTML='';
+  teamNames.forEach((name,i)=>{
+    const div=document.createElement('div');
+    div.className='g2-pred-team';
+    div.id='g2-pred-team-'+i;
+    div.innerHTML='<div class="pred-name">'+name+'</div>'
+      +'<div class="pred-btns">'
+      +'<button class="pred-btn" id="g2-agree-'+i+'" onclick="g2SetPred('+i+',\'agree\')">Agree</button>'
+      +'<button class="pred-btn" id="g2-dis-'+i+'" onclick="g2SetPred('+i+',\'disagree\')">Disagree</button>'
+      +'<button class="g2-lock-btn" id="g2-lock-'+i+'" onclick="g2LockPred('+i+')">&#128274;</button>'
+      +'</div>';
+    wrap.appendChild(div);
+  });
+}
+
+function g2SetPred(idx,vote){
+  if(g2PredLocked[idx])return;
+  g2Predictions[idx]=vote;
+  const ag=document.getElementById('g2-agree-'+idx);
+  const ds=document.getElementById('g2-dis-'+idx);
+  if(ag) ag.className='pred-btn'+(vote==='agree'?' sel-agree':'');
+  if(ds) ds.className='pred-btn'+(vote==='disagree'?' sel-disagree':'');
+}
+
+function g2LockPred(idx){
+  if(!g2Predictions[idx]){alert('Select Agree or Disagree for '+teamNames[idx]+' first.');return;}
+  g2PredLocked[idx]=true;
+  const ag=document.getElementById('g2-agree-'+idx);
+  const ds=document.getElementById('g2-dis-'+idx);
+  const lk=document.getElementById('g2-lock-'+idx);
+  if(ag){ag.disabled=true;ag.style.opacity='0.4';}
+  if(ds){ds.disabled=true;ds.style.opacity='0.4';}
+  if(lk){lk.textContent='\u2713 Locked';lk.style.background='var(--mint)';lk.style.color='#08183E';lk.disabled=true;}
+  playSwoosh();
+}
+
+function g2BuildPresentPanel(){g2UpdatePresentDisplay();}
+
+function g2UpdatePresentDisplay(){
+  const name=teamNames[g2PresentTeam]||'Team';
+  const el=document.getElementById('g2-present-active');
+  if(el) el.textContent=name+' \u2014 Presenting';
+  document.getElementById('g2-timer-label').textContent=name+' \u2014 60s';
+  resetTimer('g2',60);
+  startTimer('g2',60);
+}
+
+function g2NextPresenter(){
+  if(g2PresentTeam<teamNames.length-1){
+    g2PresentTeam++;
+    g2UpdatePresentDisplay();
+  }
+}
+
+function g2BuildJudgePanel(){
+  const pRow=document.getElementById('g2-judge-persuasion-row');pRow.innerHTML='';
+  teamNames.forEach((name,i)=>{
+    const btn=document.createElement('button');
+    btn.className='persuasion-btn';btn.id='g2-persuade-'+i;
+    btn.textContent='+1 '+name;
+    btn.onclick=()=>g2AwardPersuasion(i);
+    pRow.appendChild(btn);
+  });
+  const sRow=document.getElementById('g2-judge-split-row');sRow.innerHTML='';
+  for(let a=0;a<teamNames.length;a++){
+    for(let b=a+1;b<teamNames.length;b++){
+      const btn=document.createElement('button');
+      btn.className='persuasion-btn';
+      btn.style.fontSize='7px';
+      btn.textContent='+0.5 '+teamNames[a]+' & '+teamNames[b];
+      const ai=a,bi=b;
+      btn.onclick=()=>g2AwardSplit(ai,bi);
+      sRow.appendChild(btn);
+    }
+  }
+}
+
+function g2AwardPersuasion(idx){
+  playScore();scores[idx]+=1;buildScoreBar();
+  const btn=document.getElementById('g2-persuade-'+idx);
+  if(btn){btn.style.background='var(--yellow)';btn.style.color='#08183E';btn.style.borderColor='var(--yellow)';btn.disabled=true;}
+}
+
+function g2AwardSplit(a,b){
+  playScore();scores[a]+=0.5;scores[b]+=0.5;buildScoreBar();
+  const el=document.getElementById('mediaCue');
+  if(el){el.textContent='Judges Split \u2014 +0.5 each';el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2800);}
+}
+
+function g2CheckPredictions(majority){
+  let correct=[];
+  teamNames.forEach((_,i)=>{if(g2Predictions[i]===majority)correct.push(i);});
+  correct.forEach(i=>{scores[i]+=1;});buildScoreBar();
+  const el=document.getElementById('mediaCue');
+  const msg=correct.length>0?'Prediction +1 \u2192 '+correct.map(i=>teamNames[i]).join(', '):'No teams predicted '+majority.toUpperCase();
+  if(el){el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),3000);}
+}
+
+// ===== GAME 3 =====
+function buildG3Criteria(){
+  document.querySelectorAll('.g3-criterion').forEach(el=>el.classList.remove('reveal'));
+  g3Revealed=0;
+}
+function g3RevealNext(){
+  const items=document.querySelectorAll('.g3-criterion');
+  if(g3Revealed<items.length){playClue();items[g3Revealed].classList.add('reveal');g3Revealed++;}
+}
+function resetG3(){
+  buildG3Criteria();buildLockInRow();
+  document.getElementById('g3-vol-name').textContent='THE CHURCH USHER';
+  document.getElementById('g3-answer-box').style.display='none';
+}
+function buildLockInRow(){
+  const row=document.getElementById('g3-lockin-row');
+  if(!row)return;
+  row.innerHTML='';
+  teamNames.forEach((name,i)=>{
+    const btn=document.createElement('button');
+    btn.id='lockin-btn-'+i;
+    btn.style.cssText='font-family:"DM Mono",monospace;font-size:8px;letter-spacing:0.15em;text-transform:uppercase;padding:6px 12px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all 0.2s';
+    btn.textContent='Lock In: '+name;
+    btn.onclick=()=>lockInTeam(i);
+    row.appendChild(btn);
+  });
+}
+function lockInTeam(idx){
+  const clue=g3Revealed;
+  let pts=clue<=2?15:clue===3?12:clue===4?10:clue===5?7:clue===6?5:2;
+  const btn=document.getElementById('lockin-btn-'+idx);
+  if(btn){
+    btn.textContent=teamNames[idx]+' locked @ Clue '+clue+' ('+pts+' pts)';
+    btn.style.borderColor='var(--yellow)';btn.style.color='var(--yellow)';btn.style.cursor='default';
+    btn.onclick=null;
+  }
+  if(confirm(teamNames[idx]+' locked in at Clue '+clue+'. Award '+pts+' pts if correct?')){
+    scores[idx]+=pts;buildScoreBar();
+  }
+}
+function setVolunteer(){
+  const name=prompt('Enter case title or presenting team:');
+  if(name)document.getElementById('g3-vol-name').textContent=name;
+}
+
+// ===== FINALE =====
+function buildFinale(){
+  const wrap=document.getElementById('finale-lines');
+  if(!wrap)return;
+  wrap.innerHTML='';
+  finaleLines.forEach((line,i)=>{
+    const p=document.createElement('p');
+    p.textContent=line;
+    p.style.cssText='opacity:0;transform:translateY(12px);transition:opacity 0.6s ease,transform 0.6s ease;transition-delay:'+(i*0.3)+'s;margin-bottom:4px';
+    wrap.appendChild(p);
+    setTimeout(()=>{p.style.opacity='1';p.style.transform='translateY(0)';},100+(i*300));
+  });
+}
+function setWinner(){
+  const w=prompt('Enter winning team name:');
+  const label=document.getElementById('finale-winner-label');
+  if(w&&label){label.textContent='\u{1F3C6} Tonight\u2019s Champions: '+w;label.style.color='var(--yellow)';}
+}
+
+// ===== TIEBREAKER =====
+function buildTbDots(){
+  const wrap=document.getElementById('tb-dots');wrap.innerHTML='';
+  tbQuestions.forEach((_,i)=>{
+    const d=document.createElement('div');
+    d.className='q-dot'+(i===tbCurrent?' current':'');
+    d.onclick=()=>loadTb(i);
+    wrap.appendChild(d);
+  });
+}
+function loadTb(idx){
+  tbCurrent=idx;
+  const q=tbQuestions[idx];
+  document.getElementById('tb-text').textContent=q.q;
+  document.getElementById('tb-answer-box').style.display='none';
+  document.getElementById('tb-counter').textContent='Question '+(idx+1)+' of '+tbQuestions.length;
+  resetTimer('tb',20);
+  document.querySelectorAll('#tb-dots .q-dot').forEach((d,i)=>{
+    d.className='q-dot'+(i<idx?' done':'')+(i===idx?' current':'');
+  });
+}
+function tbReveal(){
+  playReveal();
+  document.getElementById('tb-answer-box').style.display='block';
+  document.getElementById('tb-answer-text').textContent=tbQuestions[tbCurrent].a;
+  stopTimer('tb');
+}
+function tbNext(){if(tbCurrent<tbQuestions.length-1)loadTb(tbCurrent+1);}
+function tbPrev(){if(tbCurrent>0)loadTb(tbCurrent-1);}
+
+// ===== SOUND ENGINE =====
+let AC=null;
+let soundEnabled=true;
+let hbTimer={};
+let ambientNodes=null;
+
+function getAC(){
+  if(!AC)AC=new(window.AudioContext||window.webkitAudioContext)();
+  return AC;
+}
+
+function unlockAudio(){
+  const ctx=getAC();
+  if(ctx.state==='suspended')ctx.resume();
+}
+
+// ── AMBIENT DRONE ──────────────────────────────────────────────
+// Low, slow-breathing pad: two detuned sines + slow LFO on gain
+function startAmbient(){
+  if(ambientNodes)return;
+  const ctx=getAC();
+  if(ctx.state==='suspended'){ctx.resume();}
+
+  const master=ctx.createGain();
+  master.gain.setValueAtTime(0,ctx.currentTime);
+  master.gain.linearRampToValueAtTime(0.13,ctx.currentTime+3);
+  master.connect(ctx.destination);
+
+  // Two slightly detuned sines for warmth
+  [[55,0],[55.4,0],[82.5,0]].forEach(([freq])=>{
+    const o=ctx.createOscillator();
+    const g=ctx.createGain();
+    o.type='sine';
+    o.frequency.value=freq;
+    g.gain.value=0.33;
+    o.connect(g);g.connect(master);
+    o.start();
+  });
+
+  // Slow breath LFO — rises and falls every ~8 seconds
+  const lfo=ctx.createOscillator();
+  const lfoGain=ctx.createGain();
+  lfo.type='sine';
+  lfo.frequency.value=0.12; // ~8s cycle
+  lfoGain.gain.value=0.06;
+  lfo.connect(lfoGain);
+  lfoGain.connect(master.gain);
+  lfo.start();
+
+  ambientNodes={master};
+}
+
+function stopAmbient(){
+  if(!ambientNodes)return;
+  const ctx=getAC();
+  ambientNodes.master.gain.linearRampToValueAtTime(0,ctx.currentTime+1.5);
+  setTimeout(()=>{ambientNodes=null;},2000);
+}
+
+function setAmbientIntensity(pct){
+  // pct 0-100 from timer — ambient swells slightly as tension builds
+  if(!ambientNodes)return;
+  const ctx=getAC();
+  const target=pct>50?0.13:pct>20?0.17:0.21;
+  ambientNodes.master.gain.linearRampToValueAtTime(target,ctx.currentTime+1.5);
+}
+
+// ── HEARTBEAT ──────────────────────────────────────────────────
+function beatOnce(ctx){
+  const now=ctx.currentTime;
+  // Sub-bass layer — felt more than heard
+  [0, 0.17].forEach((offset,i)=>{
+    const subFreq=i===0?55:70;
+    const subVol=i===0?1.1:0.8;
+    const sub=ctx.createOscillator();
+    const subG=ctx.createGain();
+    sub.type='sine';
+    sub.frequency.setValueAtTime(subFreq,now+offset);
+    sub.frequency.exponentialRampToValueAtTime(18,now+offset+0.45);
+    subG.gain.setValueAtTime(subVol,now+offset);
+    subG.gain.exponentialRampToValueAtTime(0.001,now+offset+0.5);
+    sub.connect(subG);subG.connect(ctx.destination);
+    sub.start(now+offset);sub.stop(now+offset+0.55);
+
+    // Mid-body punch on top of sub
+    const mid=ctx.createOscillator();
+    const midG=ctx.createGain();
+    mid.type='sine';
+    mid.frequency.setValueAtTime(i===0?120:150,now+offset);
+    mid.frequency.exponentialRampToValueAtTime(35,now+offset+0.25);
+    midG.gain.setValueAtTime(i===0?0.65:0.45,now+offset);
+    midG.gain.exponentialRampToValueAtTime(0.001,now+offset+0.3);
+    mid.connect(midG);midG.connect(ctx.destination);
+    mid.start(now+offset);mid.stop(now+offset+0.35);
+  });
+}
+
+function startHeartbeat(game){
+  stopHeartbeat(game);
+  function tick(){
+    const val=timerVals[game];
+    if(val===undefined||val<=0)return;
+    const pct=(val/timerMax[game])*100;
+    const bpm=pct>50?58:pct>20?80:120;
+    const ctx=getAC();
+    if(ctx.state==='suspended'){ctx.resume().then(()=>beatOnce(ctx));}
+    else{beatOnce(ctx);}
+    setAmbientIntensity(pct);
+    hbTimer[game]=setTimeout(tick, Math.round(60000/bpm));
+  }
+  // Fire first beat immediately
+  hbTimer[game]=setTimeout(tick,0);
+}
+
+function stopHeartbeat(game){
+  clearTimeout(hbTimer[game]);
+  hbTimer[game]=null;
+}
+
+// ── UI SOUNDS ──────────────────────────────────────────────────
+function playReveal(){
+  if(!soundEnabled)return;
+  const ctx=getAC();if(ctx.state==='suspended'){ctx.resume().then(()=>_reveal(ctx));return;}_reveal(ctx);
+}
+function _reveal(ctx){
+  const now=ctx.currentTime;
+  [[0,660],[0.2,880]].forEach(([t,f])=>{
+    const o=ctx.createOscillator(),g=ctx.createGain();
+    o.type='sine';o.frequency.value=f;
+    g.gain.setValueAtTime(0,now+t);
+    g.gain.linearRampToValueAtTime(0.35,now+t+0.02);
+    g.gain.exponentialRampToValueAtTime(0.001,now+t+0.22);
+    o.connect(g);g.connect(ctx.destination);
+    o.start(now+t);o.stop(now+t+0.26);
+  });
+}
+
+function playSwoosh(){
+  if(!soundEnabled)return;
+  const ctx=getAC();if(ctx.state==='suspended'){ctx.resume().then(()=>_swoosh(ctx));return;}_swoosh(ctx);
+}
+function _swoosh(ctx){
+  const now=ctx.currentTime;
+  const o=ctx.createOscillator(),g=ctx.createGain();
+  o.type='sine';
+  o.frequency.setValueAtTime(200,now);
+  o.frequency.exponentialRampToValueAtTime(900,now+0.1);
+  o.frequency.exponentialRampToValueAtTime(400,now+0.2);
+  g.gain.setValueAtTime(0,now);
+  g.gain.linearRampToValueAtTime(0.3,now+0.04);
+  g.gain.exponentialRampToValueAtTime(0.001,now+0.25);
+  o.connect(g);g.connect(ctx.destination);
+  o.start(now);o.stop(now+0.28);
+}
+
+function playScore(){
+  if(!soundEnabled)return;
+  const ctx=getAC();if(ctx.state==='suspended'){ctx.resume().then(()=>_score(ctx));return;}_score(ctx);
+}
+function _score(ctx){
+  const now=ctx.currentTime;
+  [440,554,660].forEach((f,i)=>{
+    const o=ctx.createOscillator(),g=ctx.createGain();
+    o.type='triangle';o.frequency.value=f;
+    g.gain.setValueAtTime(0,now+i*0.1);
+    g.gain.linearRampToValueAtTime(0.28,now+i*0.1+0.02);
+    g.gain.exponentialRampToValueAtTime(0.001,now+i*0.1+0.16);
+    o.connect(g);g.connect(ctx.destination);
+    o.start(now+i*0.1);o.stop(now+i*0.1+0.2);
+  });
+}
+
+function playClue(){
+  if(!soundEnabled)return;
+  const ctx=getAC();if(ctx.state==='suspended'){ctx.resume().then(()=>_clue(ctx));return;}_clue(ctx);
+}
+function _clue(ctx){
+  const now=ctx.currentTime;
+  const o=ctx.createOscillator(),g=ctx.createGain();
+  o.type='sine';o.frequency.value=440;
+  g.gain.setValueAtTime(0,now);
+  g.gain.linearRampToValueAtTime(0.4,now+0.02);
+  g.gain.setValueAtTime(0.4,now+0.15);
+  g.gain.exponentialRampToValueAtTime(0.001,now+0.35);
+  o.connect(g);g.connect(ctx.destination);
+  o.start(now);o.stop(now+0.4);
+}
+
+function playTimeUp(){
+  if(!soundEnabled)return;
+  const ctx=getAC();if(ctx.state==='suspended'){ctx.resume().then(()=>_timeup(ctx));return;}_timeup(ctx);
+}
+function _timeup(ctx){
+  const now=ctx.currentTime;
+  [880,660,440].forEach((f,i)=>{
+    const o=ctx.createOscillator(),g=ctx.createGain();
+    o.type='sine';o.frequency.value=f;
+    g.gain.setValueAtTime(0,now+i*0.2);
+    g.gain.linearRampToValueAtTime(0.35,now+i*0.2+0.02);
+    g.gain.exponentialRampToValueAtTime(0.001,now+i*0.2+0.24);
+    o.connect(g);g.connect(ctx.destination);
+    o.start(now+i*0.2);o.stop(now+i*0.2+0.28);
+  });
+}
+
+// ── MUTE TOGGLE ────────────────────────────────────────────────
+function toggleSound(){
+  soundEnabled=!soundEnabled;
+  const btn=document.getElementById('sound-toggle');
+  if(!soundEnabled){
+    stopAmbient();
+    btn.textContent='♥ Sound Off';
+  } else {
+    startAmbient();
+    btn.textContent='♥ Sound On';
+  }
+}
+
+// ── TIMER ──────────────────────────────────────────────────────
+function startTimer(game,duration,onEnd){
+  stopTimer(game);
+  timerMax[game]=duration;timerVals[game]=duration;
+  timerCallbacks[game]=onEnd||null;
+  updateTimerDisplay(game,duration,duration);
+  unlockAudio();
+  timers[game]=setInterval(()=>{
+    timerVals[game]--;
+    updateTimerDisplay(game,timerVals[game],timerMax[game]);
+    if(timerVals[game]<=0){
+      stopTimer(game);
+      stopHeartbeat(game);
+      playTimeUp();
+      const el=document.getElementById(game+'-timer');
+      if(el){el.textContent='TIME!';setTimeout(()=>{el.textContent='0';},2200);}
+      if(timerCallbacks[game]){setTimeout(timerCallbacks[game],600);timerCallbacks[game]=null;}
+    }
+  },1000);
+  startHeartbeat(game);
+}
+function stopTimer(game){
+  if(timers[game])clearInterval(timers[game]);
+  timers[game]=null;
+  stopHeartbeat(game);
+}
+function resetTimer(game,duration){
+  stopTimer(game);timerMax[game]=duration;timerVals[game]=duration;
+  updateTimerDisplay(game,duration,duration);
+}
+function updateTimerDisplay(game,val,max){
+  const el=document.getElementById(game+'-timer');
+  const bar=document.getElementById(game+'-bar');
+  if(!el||!bar)return;
+  const pct=(val/max)*100;
+  if(max>=60&&val>=0){const m=Math.floor(val/60);const s=val%60;el.textContent=m>0?m+':'+(s<10?'0':'')+s:s;}
+  else{el.textContent=Math.max(0,val);}
+  bar.style.width=pct+'%';
+  el.className='timer-num';
+  if(pct>50)el.classList.add('safe');
+  else if(pct>20)el.classList.add('warn');
+  else el.classList.add('danger');
+  bar.style.background=pct>50?'#3DBFA0':pct>20?'#F5D76E':'#D94050';
+}
+
+// ===== SCOREBOARD =====
+function buildScoreBar(){
+  const wrap=document.getElementById('score-teams');wrap.innerHTML='';
+  teamNames.forEach((name,i)=>{
+    const div=document.createElement('div');div.className='score-team';
+    const display=scores[i]%1===0?scores[i]:scores[i].toFixed(1);
+    div.innerHTML='<div class="score-team-name" ondblclick="renameTeam('+i+')">'+name+'</div><div class="score-team-pts" onclick="addScore('+i+')" title="+1">'+display+'</div>';
+    wrap.appendChild(div);
+  });
+}
+function addScore(idx){playScore();scores[idx]++;buildScoreBar();}
+function renameTeam(idx){
+  const n=prompt('Team name:',teamNames[idx]);
+  if(n){teamNames[idx]=n;buildScoreBar();buildLockInRow();}
+}
+function resetScores(){scores=[0,0,0,0];buildScoreBar();}
+
+// ===== KEYBOARD =====
+document.addEventListener('keydown',e=>{
+  const p=document.querySelector('.page.active');
+  if(!p)return;
+  const pid=p.id;
+  if(pid==='page-game1'){
+    if(e.key==='ArrowRight')g1Next();
+    if(e.key==='ArrowLeft')g1Prev();
+    if(e.key===' '){e.preventDefault();startTimer('g1',30);}
+    if(e.key==='r'||e.key==='R')resetTimer('g1',30);
+    if(e.key==='a'||e.key==='A')g1Reveal();
+  }
+  if(pid==='page-game2'&&e.key===' '){e.preventDefault();flipCard();}
+  if(pid==='page-game3'&&e.key===' '){e.preventDefault();g3RevealNext();}
+  if(pid==='page-tiebreaker'){
+    if(e.key==='ArrowRight')tbNext();
+    if(e.key==='ArrowLeft')tbPrev();
+    if(e.key===' '){e.preventDefault();startTimer('tb',20);}
+    if(e.key==='a'||e.key==='A')tbReveal();
+  }
+});
+
+init();
+</script>
+</body>
+</html>

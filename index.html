@@ -259,7 +259,7 @@ table{max-width:100%}
   </div>
   <div class="home-title">Doctors<br/><span>Games Night</span></div>
   <div class="home-sub">Gold Coast Games &middot; Professional Series</div>
-  <div class="home-date">4th June 2026 &middot; 7:00 PM &middot; Blohum Road, Dzorwulu &middot; Accra</div>
+  <div class="home-date">27th August 2026 &middot; 6:00 PM &middot; SID Apartments &middot; Accra</div>
   <div class="home-btns">
     <button class="home-btn" onclick="goPage('game1')"><span>&#129504; Game 1 &mdash; Doctor, What Would You Do?</span></button>
     <button class="home-btn b-mint" onclick="goPage('game2')"><span>&#128172; Game 2 &mdash; The Doctors&apos; Lounge</span></button>
@@ -333,7 +333,7 @@ table{max-width:100%}
     </div>
 
     <div class="stage-next-hint" id="g1-next-hint"></div>
-    <div class="q-counter" id="q-counter">Question 1 of 10</div>
+    <div class="q-counter" id="q-counter">Question 1 of 9</div>
   </div>
 </div>
 
@@ -648,7 +648,7 @@ table{max-width:100%}
   <div style="width:100%;max-width:720px;text-align:center;padding:20px">
 
     <!-- Header -->
-    <div style="font-size:9px;letter-spacing:0.4em;text-transform:uppercase;color:var(--mint);margin-bottom:28px">&#10010; Gold Coast Games &middot; Doctors Night &middot; 4th June 2026</div>
+    <div style="font-size:9px;letter-spacing:0.4em;text-transform:uppercase;color:var(--mint);margin-bottom:28px">&#10010; Gold Coast Games &middot; Doctors Night &middot; 27th August 2026</div>
 
     <!-- Main farewell -->
     <div style="font-family:'DM Serif Display',serif;font-style:italic;font-size:clamp(28px,5vw,68px);font-weight:700;color:var(--yellow);line-height:1;margin-bottom:32px">
@@ -692,7 +692,7 @@ table{max-width:100%}
         <div style="font-size:26px;line-height:1;margin-top:2px">&#128247;</div>
         <div>
           <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:0.1em;color:var(--mint);margin-bottom:4px">Instagram</div>
-          <div style="font-size:clamp(11px,1.5vw,14px);color:var(--white);margin-bottom:4px;font-weight:500">@goldcoastgames_gh</div>
+          <div style="font-size:clamp(11px,1.5vw,14px);color:var(--white);margin-bottom:4px;font-weight:500">@gold_coast_games</div>
           <div style="font-size:clamp(9px,1.3vw,12px);color:var(--muted);line-height:1.65">Photos and videos from tonight will be posted here. Tag us if you share anything from the evening.</div>
         </div>
       </div>
@@ -925,6 +925,16 @@ function showChampionsBeat(name){
   el.classList.add('show');
   playScore();
 }
+function scorePop(idx,amount){
+  const teams=document.querySelectorAll('.score-team');
+  const el=teams[idx];
+  if(!el)return;
+  const pop=document.createElement('div');
+  pop.className='score-pop';
+  pop.textContent='+'+(amount%1===0?amount:amount.toFixed(1));
+  el.appendChild(pop);
+  setTimeout(()=>pop.remove(),1150);
+}
 
 // ===== INIT =====
 function init(){
@@ -941,7 +951,7 @@ function goPage(id){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
   const labels={
-    home:'4th June \u00b7 Dzorwulu, Accra',
+    home:'27th August \u00b7 SID Apartments, Accra',
     game1:'Game 1 \u00b7 Doctor, What Would You Do?',
     game2:'Game 2 \u00b7 The Doctors\u2019 Lounge',
     humanity:'Intermission \u00b7 Quick Break',
@@ -1013,7 +1023,8 @@ function loadQ(idx){
   document.getElementById('q-text').textContent=q.q;
   document.getElementById('g1-pts').textContent=q.pts;
   document.getElementById('answer-box').style.display='none';
-  document.getElementById('q-counter').textContent='Question '+(idx+1)+' of '+questions.length;
+  const isBonus=q.level&&q.level.indexOf('Bonus')===0;
+  document.getElementById('q-counter').textContent=isBonus?'Bonus Question':'Question '+(idx+1)+' of '+(questions.length-1);
   resetTimer('g1',10);
   document.getElementById('g1-timer-label').textContent='Think — 10s';
   document.querySelectorAll('#q-dots .q-dot').forEach((d,i)=>{
@@ -1264,13 +1275,13 @@ function g2BuildJudgePanel(){
 }
 
 function g2AwardPersuasion(idx){
-  playScore();scores[idx]+=1;buildScoreBar();
+  playScore();scores[idx]+=1;buildScoreBar();scorePop(idx,1);
   const btn=document.getElementById('g2-persuade-'+idx);
   if(btn){btn.style.background='var(--yellow)';btn.style.color='#08183E';btn.style.borderColor='var(--yellow)';btn.disabled=true;}
 }
 
 function g2AwardSplit(a,b){
-  playScore();scores[a]+=0.5;scores[b]+=0.5;buildScoreBar();
+  playScore();scores[a]+=0.5;scores[b]+=0.5;buildScoreBar();scorePop(a,0.5);scorePop(b,0.5);
   const el=document.getElementById('mediaCue');
   if(el){el.textContent='Judges Split \u2014 +0.5 each';el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2800);}
 }
@@ -1278,7 +1289,7 @@ function g2AwardSplit(a,b){
 function g2CheckPredictions(majority){
   let correct=[];
   teamNames.forEach((_,i)=>{if(g2Predictions[i]===majority)correct.push(i);});
-  correct.forEach(i=>{scores[i]+=1;});buildScoreBar();
+  correct.forEach(i=>{scores[i]+=1;});buildScoreBar();correct.forEach(i=>scorePop(i,1));
   const el=document.getElementById('mediaCue');
   const msg=correct.length>0?'Prediction +1 \u2192 '+correct.map(i=>teamNames[i]).join(', '):'No teams predicted '+majority.toUpperCase();
   if(el){el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),3000);}
@@ -1321,7 +1332,7 @@ function lockInTeam(idx){
     btn.onclick=null;
   }
   if(confirm(teamNames[idx]+' locked in at Clue '+clue+'. Award '+pts+' pts if correct?')){
-    scores[idx]+=pts;buildScoreBar();
+    scores[idx]+=pts;buildScoreBar();scorePop(idx,pts);
   }
 }
 function setVolunteer(){
@@ -1346,6 +1357,7 @@ function setWinner(){
   const w=prompt('Enter winning team name:');
   const label=document.getElementById('finale-winner-label');
   if(w&&label){label.textContent='\u{1F3C6} Tonight\u2019s Champions: '+w;label.style.color='var(--yellow)';}
+  if(w)showChampionsBeat(w);
 }
 
 // ===== TIEBREAKER =====
@@ -1656,7 +1668,7 @@ function buildScoreBar(){
     wrap.appendChild(div);
   });
 }
-function addScore(idx){playScore();scores[idx]++;buildScoreBar();}
+function addScore(idx){playScore();scores[idx]++;buildScoreBar();scorePop(idx,1);}
 function renameTeam(idx){
   const n=prompt('Team name:',teamNames[idx]);
   if(n){teamNames[idx]=n;buildScoreBar();buildLockInRow();}

@@ -143,11 +143,22 @@ body{display:flex;flex-direction:column}
 .g3-wrap{width:100%;max-width:940px}
 .g3-title-big{font-family:'DM Serif Display',serif;font-size:clamp(26px,4vw,56px);font-style:italic;font-weight:700;line-height:1;color:var(--white);margin-bottom:6px}
 .g3-sub{font-size:9.5px;letter-spacing:0.25em;text-transform:uppercase;color:var(--yellow);margin-bottom:16px}
-.g3-criteria{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;text-align:left}
-.g3-criterion{background:rgba(12,32,80,0.72);border:1px solid var(--border);padding:16px;position:relative;overflow:hidden;opacity:0;transform:translateY(14px);transition:all 0.45s}
+.g3-criteria{display:flex;flex-direction:column;gap:10px;text-align:left;align-items:center}
+.g3-criterion{background:rgba(12,32,80,0.72);border:1px solid var(--border);padding:16px;position:relative;overflow:hidden;opacity:0;transform:translateY(14px);transition:all 0.45s;width:100%;max-width:740px}
 .g3-criterion.reveal{opacity:1;transform:translateY(0)}
+.g3-criterion.reveal.current{padding:26px 32px;border-color:rgba(245,215,110,0.3);background:linear-gradient(135deg,#0c2360,#0a1c4c)}
+.g3-criterion.reveal.current .g3-crit-title{font-size:clamp(15px,2.4vw,24px);margin-bottom:8px}
+.g3-criterion.reveal.current .g3-crit-desc{font-size:clamp(12px,1.7vw,16.5px);line-height:1.8}
+.g3-criterion.reveal.current .g3-crit-icon{font-size:30px}
+.g3-criterion.reveal.past{padding:9px 18px;background:rgba(8,20,50,0.45);border-color:rgba(255,255,255,0.04)}
+.g3-criterion.reveal.past .g3-crit-title{font-size:8.5px;letter-spacing:0.08em;color:var(--muted);margin-bottom:0}
+.g3-criterion.reveal.past .g3-crit-desc{display:none}
+.g3-criterion.reveal.past .g3-crit-icon{font-size:13px}
+.g3-criterion.reveal.past .g3-crit-num{font-size:15px;opacity:0.35;position:static;display:inline-block;margin-right:8px}
 .g3-crit-num{font-family:'Bebas Neue',sans-serif;font-size:34px;color:rgba(245,215,110,0.1);position:absolute;top:6px;right:9px;line-height:1}
 .g3-crit-icon{font-size:20px;margin-bottom:5px}
+.g3-crit-pts{font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.2em;text-transform:uppercase;color:var(--yellow);margin-bottom:8px}
+.g3-criterion.past .g3-crit-pts{display:none}
 .g3-crit-title{font-size:11px;font-weight:500;color:var(--yellow);margin-bottom:5px;letter-spacing:0.05em}
 .g3-crit-desc{font-size:9.5px;color:#8AAAC0;line-height:1.65}
 .g3-volunteer{background:rgba(61,191,160,0.06);border:1px solid rgba(61,191,160,0.18);padding:10px 18px;margin-bottom:12px;font-size:clamp(10px,1.5vw,14px);color:var(--mint);letter-spacing:0.04em;line-height:1.6}
@@ -215,7 +226,7 @@ html,body{width:100%!important;min-height:100%!important;overflow:auto!important
 img,svg,canvas,video{max-width:100%!important;height:auto!important}
 table{max-width:100%}
 @media(max-width:1024px){.topbar{padding:0 12px!important}.host-panel-nav{flex-wrap:wrap!important}}
-@media(max-width:768px){.home-btns,.button-row{flex-direction:column!important;width:100%!important}.home-btn,button{max-width:100%}h1,h2{word-break:break-word}.g3-criteria{grid-template-columns:1fr!important}}
+@media(max-width:768px){.home-btns,.button-row{flex-direction:column!important;width:100%!important}.home-btn,button{max-width:100%}h1,h2{word-break:break-word}}
 @media(max-width:480px){.screen{padding:12px!important}}
 </style>
 </head>
@@ -1297,12 +1308,35 @@ function g2CheckPredictions(majority){
 
 // ===== GAME 3 =====
 function buildG3Criteria(){
-  document.querySelectorAll('.g3-criterion').forEach(el=>el.classList.remove('reveal'));
+  document.querySelectorAll('.g3-criterion').forEach(el=>{
+    el.classList.remove('reveal','current','past');
+    const p=el.querySelector('.g3-crit-pts');
+    if(p)p.remove();
+  });
   g3Revealed=0;
+}
+function g3LockInPts(clue){
+  return clue<=2?15:clue===3?12:clue===4?10:clue===5?7:clue===6?5:2;
 }
 function g3RevealNext(){
   const items=document.querySelectorAll('.g3-criterion');
-  if(g3Revealed<items.length){playClue();items[g3Revealed].classList.add('reveal');g3Revealed++;}
+  if(g3Revealed<items.length){
+    playClue();
+    const prevCurrent=document.querySelector('.g3-criterion.current');
+    if(prevCurrent){prevCurrent.classList.remove('current');prevCurrent.classList.add('past');}
+    const el=items[g3Revealed];
+    g3Revealed++;
+    const pts=g3LockInPts(g3Revealed);
+    showStageBeat('CLUE '+g3Revealed,'',800);
+    let ptsEl=el.querySelector('.g3-crit-pts');
+    if(!ptsEl){
+      ptsEl=document.createElement('div');
+      ptsEl.className='g3-crit-pts';
+      el.insertBefore(ptsEl,el.querySelector('.g3-crit-title'));
+    }
+    ptsEl.textContent='Lock in now → '+pts+' pts';
+    el.classList.add('reveal','current');
+  }
 }
 function resetG3(){
   buildG3Criteria();buildLockInRow();
@@ -1324,7 +1358,7 @@ function buildLockInRow(){
 }
 function lockInTeam(idx){
   const clue=g3Revealed;
-  let pts=clue<=2?15:clue===3?12:clue===4?10:clue===5?7:clue===6?5:2;
+  let pts=g3LockInPts(clue);
   const btn=document.getElementById('lockin-btn-'+idx);
   if(btn){
     btn.textContent=teamNames[idx]+' locked @ Clue '+clue+' ('+pts+' pts)';

@@ -160,9 +160,9 @@ body{display:flex;flex-direction:column}
 .g3-criteria{display:flex;flex-direction:column;gap:6px;text-align:left;align-items:center;position:relative;width:100%}
 .g3-criterion{background:rgba(12,32,80,0.72);border:1px solid var(--border);padding:16px;position:absolute;overflow:hidden;opacity:0;transform:translateY(14px);transition:all 0.45s;width:100%;max-width:740px;pointer-events:none}
 .g3-criterion.reveal{position:static;opacity:1;transform:translateY(0);pointer-events:auto}
-.g3-criterion.reveal.current{padding:13px 22px;border-color:rgba(245,215,110,0.3);background:linear-gradient(135deg,#0c2360,#0a1c4c)}
-.g3-criterion.reveal.current .g3-crit-title{font-size:clamp(13px,2vw,20px);margin-bottom:4px}
-.g3-criterion.reveal.current .g3-crit-desc{font-size:clamp(11px,1.5vw,14.5px);line-height:1.5}
+.g3-criterion.reveal.current{padding:11px 20px;border-color:rgba(245,215,110,0.3);background:linear-gradient(135deg,#0c2360,#0a1c4c)}
+.g3-criterion.reveal.current .g3-crit-title{font-size:clamp(14px,2.2vw,22px);margin-bottom:2px}
+.g3-criterion.reveal.current .g3-crit-desc{font-size:clamp(12px,1.7vw,16.5px);line-height:1.5}
 .g3-criterion.reveal.current .g3-crit-icon{font-size:24px;margin-bottom:2px}
 .g3-criterion.reveal.past{padding:4px 12px;background:rgba(8,20,50,0.45);border-color:rgba(255,255,255,0.04);display:flex;align-items:center;gap:8px}
 .g3-criterion.reveal.past .g3-crit-title{font-size:8.5px;letter-spacing:0.08em;color:var(--muted);margin-bottom:0}
@@ -171,11 +171,11 @@ body{display:flex;flex-direction:column}
 .g3-criterion.reveal.past .g3-crit-num{font-size:12px;opacity:0.35;position:static;display:inline-block;margin-right:0}
 .g3-crit-num{font-family:'Bebas Neue',sans-serif;font-size:34px;color:rgba(245,215,110,0.1);position:absolute;top:6px;right:9px;line-height:1}
 .g3-crit-icon{font-size:20px;margin-bottom:5px}
-.g3-crit-pts{font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.2em;text-transform:uppercase;color:var(--yellow);margin-bottom:8px}
+.g3-crit-pts{font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.2em;text-transform:uppercase;color:var(--yellow);margin-bottom:4px}
 .g3-criterion.past .g3-crit-pts{display:none}
 .g3-crit-title{font-size:11px;font-weight:500;color:var(--yellow);margin-bottom:5px;letter-spacing:0.05em}
 .g3-crit-desc{font-size:9.5px;color:#8AAAC0;line-height:1.65}
-.g3-volunteer{background:rgba(61,191,160,0.06);border:1px solid rgba(61,191,160,0.18);padding:7px 16px;margin-bottom:8px;font-size:clamp(10px,1.4vw,13px);color:var(--mint);letter-spacing:0.04em;line-height:1.5}
+.g3-volunteer{background:rgba(61,191,160,0.06);border:1px solid rgba(61,191,160,0.18);padding:7px 16px;margin-bottom:4px;font-size:clamp(10px,1.5vw,14px);color:var(--mint);letter-spacing:0.04em;line-height:1.5}
 .g3-reveal-btn{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:0.1em;padding:12px 36px;border:1px solid var(--yellow);background:transparent;color:var(--yellow);cursor:pointer;transition:all 0.2s;margin-top:14px}
 .g3-reveal-btn:hover{background:var(--yellow);color:#08183E}
 .tb-badge{display:inline-block;font-size:8.5px;letter-spacing:0.3em;text-transform:uppercase;color:var(--red);border:1px solid var(--red);padding:4px 14px;margin-bottom:18px}
@@ -643,7 +643,7 @@ table{max-width:100%}
     </div>
     <div style="display:flex;gap:14px;justify-content:center;margin-top:12px;align-items:center;flex-wrap:wrap">
       <div style="text-align:center">
-        <div class="timer-num safe" id="g3-timer" style="font-size:clamp(38px,5.5vw,76px)" onclick="togglePause('g3')">300</div>
+        <div class="timer-num safe" id="g3-timer" style="font-size:clamp(42px,6.8vw,88px)" onclick="togglePause('g3')">300</div>
         <div class="timer-bar-track" style="width:190px"><div class="timer-bar-fill" id="g3-bar" style="width:100%"></div></div>
         <div class="timer-label" id="g3-timer-label">Discussion &mdash; 5 mins</div>
       </div>

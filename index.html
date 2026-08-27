@@ -91,15 +91,15 @@ body{display:flex;flex-direction:column}
 .q-dot.done{background:var(--mint);border-color:var(--mint)}
 .q-dot.current{border-color:var(--yellow);box-shadow:0 0 6px var(--yellow)}
 .g2-wrap{width:100%;max-width:780px}
-.card-flip-wrap{perspective:1000px;margin-bottom:16px}
-.card-flip{width:100%;min-height:200px;position:relative;transform-style:preserve-3d;transition:transform 0.65s cubic-bezier(0.4,0,0.2,1)}
+.card-flip-wrap{perspective:1000px;margin-bottom:8px}
+.card-flip{width:100%;min-height:150px;position:relative;transform-style:preserve-3d;transition:transform 0.65s cubic-bezier(0.4,0,0.2,1)}
 .card-flip.flipped{transform:rotateY(180deg)}
-.card-face{position:absolute;inset:0;backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px;border:1px solid var(--border)}
+.card-face{position:absolute;inset:0;backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;border:1px solid var(--border)}
 .card-back{background:var(--bg);transform:rotateY(0deg)}
 .card-front{background:linear-gradient(135deg,#091840,#0c2260);border-color:rgba(245,215,110,0.28);transform:rotateY(180deg)}
 .card-back-design{display:flex;flex-direction:column;align-items:center;gap:8px;opacity:0.38}
 .card-back-text{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:0.1em;color:var(--yellow)}
-.card-num{font-size:8.5px;letter-spacing:0.3em;text-transform:uppercase;color:var(--yellow);margin-bottom:10px}
+.card-num{font-size:8.5px;letter-spacing:0.3em;text-transform:uppercase;color:var(--yellow);margin-bottom:5px}
 .card-take{font-family:'DM Serif Display',serif;font-style:italic;font-size:clamp(16px,2.5vw,32px);font-weight:700;line-height:1.2;color:var(--white);text-align:center}
 .card-tip{font-size:9.5px;color:var(--muted);margin-top:10px;max-width:480px;text-align:center;line-height:1.65}
 .card-selector{display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin-bottom:12px}
@@ -125,20 +125,20 @@ body{display:flex;flex-direction:column}
 .persuasion-btn{font-family:'DM Mono',monospace;font-size:7.5px;letter-spacing:0.12em;text-transform:uppercase;padding:5px 10px;border:1px solid rgba(245,215,110,0.3);background:transparent;color:rgba(245,215,110,0.5);cursor:pointer;transition:all 0.2s}
 .persuasion-btn:hover{background:var(--yellow);color:#08183E;border-color:var(--yellow)}
 /* ── GAME 2 STAGES ── */
-.g2-stage{display:none;flex-direction:column;align-items:center;gap:10px;width:100%;animation:fadeIn 0.3s ease;margin-bottom:8px;padding:14px 0}
+.g2-stage{display:none;flex-direction:column;align-items:center;gap:5px;width:100%;animation:fadeIn 0.3s ease;margin-bottom:2px;padding:4px 0}
 .g2-stage-label{font-size:8px;letter-spacing:0.28em;text-transform:uppercase;color:var(--yellow);margin-bottom:2px}
 .g2-pred-teams-grid{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
 .g2-pred-team{display:flex;flex-direction:column;align-items:center;gap:5px}
 .g2-lock-btn{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.12em;text-transform:uppercase;padding:5px 9px;border:1px solid rgba(61,191,160,0.4);background:transparent;color:rgba(61,191,160,0.6);cursor:pointer;transition:all 0.2s}
 .g2-lock-btn:hover{background:var(--mint);color:#08183E;border-color:var(--mint)}
-.g2-stage-btn{font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.18em;text-transform:uppercase;padding:9px 24px;border:1px solid var(--yellow);background:transparent;color:var(--yellow);cursor:pointer;transition:all 0.2s;margin-top:6px}
+.g2-stage-btn{font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.18em;text-transform:uppercase;padding:7px 22px;border:1px solid var(--yellow);background:transparent;color:var(--yellow);cursor:pointer;transition:all 0.2s;margin-top:3px}
 .g2-stage-btn:hover{background:var(--yellow);color:#08183E}
-.g2-present-active{font-family:'Bebas Neue',sans-serif;font-size:clamp(22px,3.5vw,42px);letter-spacing:0.08em;color:var(--mint);text-align:center}
-.g2-judge-section{display:flex;flex-direction:column;align-items:center;gap:7px;width:100%;border-top:1px solid var(--border);padding-top:10px;margin-top:4px}
+.g2-present-active{font-family:'Bebas Neue',sans-serif;font-size:clamp(18px,3vw,32px);letter-spacing:0.08em;color:var(--mint);text-align:center}
+.g2-judge-section{display:flex;flex-direction:column;align-items:center;gap:5px;width:100%;border-top:1px solid var(--border);padding-top:6px;margin-top:2px}
 .g2-judge-row{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
-.g2-followup{background:rgba(245,215,110,0.06);border:1px solid rgba(245,215,110,0.18);padding:12px 20px;max-width:640px;margin-top:8px;text-align:center;animation:fadeIn 0.4s ease}
-.g2-followup-label{font-size:7px;letter-spacing:0.28em;text-transform:uppercase;color:var(--yellow);margin-bottom:6px}
-.g2-followup-text{font-size:clamp(11px,1.5vw,14px);color:var(--white);line-height:1.7;font-style:italic}
+.g2-followup{background:rgba(245,215,110,0.06);border:1px solid rgba(245,215,110,0.18);padding:6px 14px;max-width:640px;margin-top:2px;text-align:center;animation:fadeIn 0.4s ease}
+.g2-followup-label{font-size:7px;letter-spacing:0.28em;text-transform:uppercase;color:var(--yellow);margin-bottom:3px}
+.g2-followup-text{font-size:clamp(11px,1.5vw,14px);color:var(--white);line-height:1.5;font-style:italic}
 .g2-card-option{font-size:clamp(10px,1.4vw,13px);color:#8AAAC0;padding:3px 0;line-height:1.55;letter-spacing:0.02em}
 /* ── STAGE BADGE (Game 1 & 2) ── */
 .stage-badge{font-family:'Bebas Neue',sans-serif;font-size:clamp(22px,3.6vw,46px);letter-spacing:0.28em;padding:5px 22px;border:1px solid;display:inline-block;transition:color 0.3s,border-color 0.3s,background 0.3s;margin-bottom:4px;min-width:200px;text-align:center}
@@ -156,26 +156,26 @@ body{display:flex;flex-direction:column}
 .pause-btn.paused:hover{background:rgba(61,191,160,0.1)}
 .g3-wrap{width:100%;max-width:940px}
 .g3-title-big{font-family:'DM Serif Display',serif;font-size:clamp(26px,4vw,56px);font-style:italic;font-weight:700;line-height:1;color:var(--white);margin-bottom:6px}
-.g3-sub{font-size:9.5px;letter-spacing:0.25em;text-transform:uppercase;color:var(--yellow);margin-bottom:16px}
-.g3-criteria{display:flex;flex-direction:column;gap:10px;text-align:left;align-items:center;position:relative;width:100%}
+.g3-sub{font-size:9.5px;letter-spacing:0.25em;text-transform:uppercase;color:var(--yellow);margin-bottom:10px}
+.g3-criteria{display:flex;flex-direction:column;gap:6px;text-align:left;align-items:center;position:relative;width:100%}
 .g3-criterion{background:rgba(12,32,80,0.72);border:1px solid var(--border);padding:16px;position:absolute;overflow:hidden;opacity:0;transform:translateY(14px);transition:all 0.45s;width:100%;max-width:740px;pointer-events:none}
 .g3-criterion.reveal{position:static;opacity:1;transform:translateY(0);pointer-events:auto}
-.g3-criterion.reveal.current{padding:26px 32px;border-color:rgba(245,215,110,0.3);background:linear-gradient(135deg,#0c2360,#0a1c4c)}
-.g3-criterion.reveal.current .g3-crit-title{font-size:clamp(15px,2.4vw,24px);margin-bottom:8px}
-.g3-criterion.reveal.current .g3-crit-desc{font-size:clamp(12px,1.7vw,16.5px);line-height:1.8}
-.g3-criterion.reveal.current .g3-crit-icon{font-size:30px}
-.g3-criterion.reveal.past{padding:9px 18px;background:rgba(8,20,50,0.45);border-color:rgba(255,255,255,0.04)}
+.g3-criterion.reveal.current{padding:13px 22px;border-color:rgba(245,215,110,0.3);background:linear-gradient(135deg,#0c2360,#0a1c4c)}
+.g3-criterion.reveal.current .g3-crit-title{font-size:clamp(13px,2vw,20px);margin-bottom:4px}
+.g3-criterion.reveal.current .g3-crit-desc{font-size:clamp(11px,1.5vw,14.5px);line-height:1.5}
+.g3-criterion.reveal.current .g3-crit-icon{font-size:24px;margin-bottom:2px}
+.g3-criterion.reveal.past{padding:4px 12px;background:rgba(8,20,50,0.45);border-color:rgba(255,255,255,0.04);display:flex;align-items:center;gap:8px}
 .g3-criterion.reveal.past .g3-crit-title{font-size:8.5px;letter-spacing:0.08em;color:var(--muted);margin-bottom:0}
 .g3-criterion.reveal.past .g3-crit-desc{display:none}
-.g3-criterion.reveal.past .g3-crit-icon{font-size:13px}
-.g3-criterion.reveal.past .g3-crit-num{font-size:15px;opacity:0.35;position:static;display:inline-block;margin-right:8px}
+.g3-criterion.reveal.past .g3-crit-icon{font-size:12px;margin-bottom:0}
+.g3-criterion.reveal.past .g3-crit-num{font-size:12px;opacity:0.35;position:static;display:inline-block;margin-right:0}
 .g3-crit-num{font-family:'Bebas Neue',sans-serif;font-size:34px;color:rgba(245,215,110,0.1);position:absolute;top:6px;right:9px;line-height:1}
 .g3-crit-icon{font-size:20px;margin-bottom:5px}
 .g3-crit-pts{font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.2em;text-transform:uppercase;color:var(--yellow);margin-bottom:8px}
 .g3-criterion.past .g3-crit-pts{display:none}
 .g3-crit-title{font-size:11px;font-weight:500;color:var(--yellow);margin-bottom:5px;letter-spacing:0.05em}
 .g3-crit-desc{font-size:9.5px;color:#8AAAC0;line-height:1.65}
-.g3-volunteer{background:rgba(61,191,160,0.06);border:1px solid rgba(61,191,160,0.18);padding:10px 18px;margin-bottom:12px;font-size:clamp(10px,1.5vw,14px);color:var(--mint);letter-spacing:0.04em;line-height:1.6}
+.g3-volunteer{background:rgba(61,191,160,0.06);border:1px solid rgba(61,191,160,0.18);padding:7px 16px;margin-bottom:8px;font-size:clamp(10px,1.4vw,13px);color:var(--mint);letter-spacing:0.04em;line-height:1.5}
 .g3-reveal-btn{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:0.1em;padding:12px 36px;border:1px solid var(--yellow);background:transparent;color:var(--yellow);cursor:pointer;transition:all 0.2s;margin-top:14px}
 .g3-reveal-btn:hover{background:var(--yellow);color:#08183E}
 .tb-badge{display:inline-block;font-size:8.5px;letter-spacing:0.3em;text-transform:uppercase;color:var(--red);border:1px solid var(--red);padding:4px 14px;margin-bottom:18px}
@@ -241,7 +241,8 @@ body.host-mode .host-toggle{background:var(--yellow);border-color:var(--yellow);
 .champ-beat-close:hover{color:var(--yellow);border-color:var(--yellow)}
 </style>
 <style id="gcg-responsive-upgrade">
-html,body{width:100%!important;min-height:100%!important;overflow:auto!important;cursor:auto!important}
+html,body{width:100%!important;height:auto!important;min-height:100%!important;overflow:auto!important;cursor:auto!important}
+body{display:block!important}
 .screen{position:relative!important;inset:auto!important;min-height:100vh;min-height:100dvh;padding:clamp(16px,2vw,48px)!important}
 img,svg,canvas,video{max-width:100%!important;height:auto!important}
 table{max-width:100%}
@@ -454,13 +455,11 @@ table{max-width:100%}
         </div>
       </div>
     </div>
-    <div class="card-tip host-ctrl" id="g2-card-tip"></div>
-
     <!-- SHARED TIMER (visible after card selected) -->
     <div id="g2-timer-wrap" style="display:none;text-align:center;margin-bottom:2px">
       <div class="stage-badge think" id="g2-stage-badge" style="display:none">THINK</div>
       <div class="stage-instruction" id="g2-stage-instruction"></div>
-      <div class="timer-num safe" id="g2-timer" style="font-size:clamp(46px,7.5vw,96px)" onclick="togglePause('g2')">60</div>
+      <div class="timer-num safe" id="g2-timer" style="font-size:clamp(38px,6vw,72px)" onclick="togglePause('g2')">60</div>
       <div class="timer-bar-track" style="width:210px"><div class="timer-bar-fill" id="g2-bar" style="width:100%"></div></div>
       <div class="timer-label" id="g2-timer-label">&mdash;</div>
     </div>
@@ -667,14 +666,10 @@ table{max-width:100%}
           <span class="answer-fact-label">&#128161; Clinical Note</span>
           Insulinoma is rare (1&ndash;4 per million per year) but is the most common functional pancreatic neuroendocrine tumour. 90% are benign and solitary. Surgical resection is curative in most cases. The diagnosis is often delayed by months or years because episodes are intermittent and self-resolving.
         </div>
-        <div class="answer-insight host-ctrl">
-          <span class="answer-insight-label">Host Prompts</span>
-          Ask: Which clue changed your thinking? Which single detail mattered most? Who suspected an endocrine cause early?
-        </div>
       </div>
     </div>
     <div style="margin-top:8px">
-      <button class="q-btn reveal" onclick="var b=document.getElementById('g3-answer-box');b.style.display=b.style.display==='none'?'block':'none'">Show/Hide Diagnosis</button>
+      <button class="q-btn reveal" onclick="g3ToggleAnswer()">Show/Hide Diagnosis</button>
     </div>
   </div>
 </div>
@@ -999,7 +994,7 @@ function showChampionsBeat(name){
   playScore();
 }
 // ── AUTO-FIT: shrink variable-length text so the active page never needs to scroll ──
-const AUTOFIT_SELECTORS=['#q-text','#tb-text','#g2-card-take','.g3-criterion.current .g3-crit-desc'];
+const AUTOFIT_SELECTORS=['#q-text','#tb-text','#g2-card-take','#g2-followup-text','.g3-criterion.current .g3-crit-desc'];
 let autofitRaf=null;
 function fitPageContent(){
   if(autofitRaf)cancelAnimationFrame(autofitRaf);
@@ -1017,8 +1012,14 @@ function fitPageContent(){
     // visualViewport tracks the actually-visible area (accounts for mobile
     // browser chrome/keyboard); innerHeight can overstate it on phones
     const viewportH=(window.visualViewport&&window.visualViewport.height)||window.innerHeight;
+    // The score bar is a fixed overlay, not part of document flow, so
+    // "no scroll overflow" alone doesn't mean the last bit of content is
+    // actually visible — it can render right underneath the score bar.
+    const scoreBar=document.querySelector('.score-bar');
+    const scoreBarH=(scoreBar&&getComputedStyle(scoreBar).display!=='none')?scoreBar.offsetHeight:0;
+    const usableH=viewportH-scoreBarH;
     let guard=30;
-    while(document.documentElement.scrollHeight>viewportH+2&&guard-->0){
+    while(document.documentElement.scrollHeight>usableH+2&&guard-->0){
       let shrunkAny=false;
       targets.forEach(el=>{
         const current=parseFloat(getComputedStyle(el).fontSize);
@@ -1230,7 +1231,6 @@ function selectCard(idx,btn){
   const ht=hotTakes[idx];
   document.getElementById('g2-card-num').textContent='Card '+ht.num;
   document.getElementById('g2-card-take').textContent=ht.take;
-  document.getElementById('g2-card-tip').textContent=ht.tip;
   const optWrap=document.getElementById('g2-card-options');
   if(ht.options&&ht.options.length){
     optWrap.innerHTML=ht.options.map(o=>'<div class="g2-card-option">'+o+'</div>').join('');
@@ -1273,12 +1273,14 @@ function g2GoDiscuss(){
   g2SetStage(2);
   document.getElementById('g2-timer-label').textContent='Discuss \u2014 60s';
   resetTimer('g2',60);
+  fitPageContent();
 }
 
 function g2GoLock(){
   g2SetStage(3);
   document.getElementById('g2-timer-label').textContent='Lock \u2014 15s';
   resetTimer('g2',15);
+  fitPageContent();
 }
 
 function g2GoPresent(){
@@ -1288,12 +1290,14 @@ function g2GoPresent(){
   document.getElementById('g2-followup-wrap').style.display='block';
   const ht=hotTakes[g2CurrentCard];
   if(ht&&ht.followUp){document.getElementById('g2-followup-text').textContent=ht.followUp;}
+  fitPageContent();
 }
 
 function g2GoJudge(){
   g2SetStage(5);
   stopTimer('g2');
   document.getElementById('g2-timer-label').textContent='\u2014';
+  fitPageContent();
 }
 
 function g2BuildPredPanel(){
@@ -1431,6 +1435,11 @@ function resetG3(){
   buildG3Criteria();buildLockInRow();
   document.getElementById('g3-vol-name').textContent='THE CHURCH USHER';
   document.getElementById('g3-answer-box').style.display='none';
+  fitPageContent();
+}
+function g3ToggleAnswer(){
+  const b=document.getElementById('g3-answer-box');
+  b.style.display=b.style.display==='none'?'block':'none';
   fitPageContent();
 }
 function buildLockInRow(){

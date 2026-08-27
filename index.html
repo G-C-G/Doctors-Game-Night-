@@ -34,13 +34,17 @@ body{display:flex;flex-direction:column}
 .home-sub{font-size:clamp(8px,1.3vw,12px);letter-spacing:0.32em;text-transform:uppercase;color:var(--mint);margin-bottom:6px}
 .home-date{font-size:clamp(8px,1.1vw,10px);letter-spacing:0.2em;color:var(--muted);margin-bottom:36px}
 .home-btns{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
-.home-btn{font-family:'Bebas Neue',sans-serif;font-size:clamp(15px,2vw,24px);letter-spacing:0.1em;padding:16px 40px;border:1px solid var(--border);background:transparent;color:var(--white);cursor:pointer;transition:all 0.3s;position:relative;overflow:hidden}
+.home-btn{font-family:'Bebas Neue',sans-serif;padding:26px 30px;border:1px solid var(--border);background:transparent;color:var(--white);cursor:pointer;transition:all 0.3s;position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;min-width:250px;max-width:340px}
 .home-btn::before{content:'';position:absolute;inset:0;background:var(--yellow);transform:scaleX(0);transform-origin:left;transition:transform 0.3s}
 .home-btn:hover::before{transform:scaleX(1)}
-.home-btn span{position:relative;z-index:1}
-.home-btn:hover span{color:#08183E}
+.home-btn>span{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:8px}
+.home-btn:hover>span{color:#08183E}
 .home-btn.b-mint::before{background:var(--mint)}
 .home-btn.b-red::before{background:var(--red)}
+.home-btn-name{font-size:clamp(19px,2.4vw,28px);letter-spacing:0.05em;white-space:nowrap}
+.home-btn-desc{font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:0.03em;line-height:1.55;text-transform:none;color:inherit;opacity:0.7;max-width:230px}
+.fullscreen-btn{display:flex;align-items:center;gap:8px;margin-top:26px;font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.18em;text-transform:uppercase;padding:9px 18px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all 0.25s}
+.fullscreen-btn:hover{border-color:var(--mint);color:var(--mint)}
 .timer-num{font-family:'Bebas Neue',sans-serif;font-size:clamp(72px,13vw,170px);line-height:1;letter-spacing:-0.02em;transition:color 0.3s}
 .timer-num.safe{color:var(--mint)}
 .timer-num.warn{color:var(--yellow)}
@@ -230,7 +234,7 @@ html,body{width:100%!important;min-height:100%!important;overflow:auto!important
 img,svg,canvas,video{max-width:100%!important;height:auto!important}
 table{max-width:100%}
 @media(max-width:1024px){.topbar{padding:0 12px!important}.host-panel-nav{flex-wrap:wrap!important}}
-@media(max-width:768px){.home-btns,.button-row{flex-direction:column!important;width:100%!important}.home-btn,button{max-width:100%}h1,h2{word-break:break-word}}
+@media(max-width:768px){.home-btns,.button-row{flex-direction:column!important;width:100%!important}.home-btn,button{max-width:100%}h1,h2{word-break:break-word}.home-btn-name{white-space:normal}}
 @media(max-width:480px){.screen{padding:12px!important}}
 </style>
 </head>
@@ -276,10 +280,29 @@ table{max-width:100%}
   <div class="home-sub">Gold Coast Games &middot; Professional Series</div>
   <div class="home-date">27th August 2026 &middot; 6:00 PM &middot; SID Apartments &middot; Accra</div>
   <div class="home-btns">
-    <button class="home-btn" onclick="goPage('game1')"><span>&#129504; Game 1 &mdash; Doctor, What Would You Do?</span></button>
-    <button class="home-btn b-mint" onclick="goPage('game2')"><span>&#128172; Game 2 &mdash; The Doctors&apos; Lounge</span></button>
-    <button class="home-btn" onclick="goPage('game3')"><span>&#127973; Game 3 &mdash; The Ghana Case Files</span></button>
+    <button class="home-btn" onclick="goPage('game1')">
+      <span>
+        <span class="home-btn-name">STAT</span>
+        <span class="home-btn-desc">Rapid-fire scenarios. Think fast, answer faster.</span>
+      </span>
+    </button>
+    <button class="home-btn b-mint" onclick="goPage('game2')">
+      <span>
+        <span class="home-btn-name">THE LOUNGE</span>
+        <span class="home-btn-desc">Predict the room. Argue your case. Win them over.</span>
+      </span>
+    </button>
+    <button class="home-btn" onclick="goPage('game3')">
+      <span>
+        <span class="home-btn-name">GRAND ROUNDS</span>
+        <span class="home-btn-desc">One patient, six clues. How fast can you diagnose?</span>
+      </span>
+    </button>
   </div>
+  <button class="fullscreen-btn" onclick="toggleFullscreen()">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+    <span id="fullscreenBtnLabel">Enter Full Screen</span>
+  </button>
 </div>
 
 <!-- GAME 1: DOCTOR, WHAT WOULD YOU DO? -->
@@ -287,7 +310,7 @@ table{max-width:100%}
   <div class="g1-wrap">
     <div class="q-level">
       <div class="q-level-line"></div>
-      <span>Game 1 &mdash; Doctor, What Would You Do?</span>
+      <span>STAT</span>
       <span class="q-pts" id="g1-pts">1 pt</span>
       <div class="q-level-line"></div>
     </div>
@@ -365,7 +388,7 @@ table{max-width:100%}
   <div class="g2-wrap">
     <div class="q-level">
       <div class="q-level-line"></div>
-      <span>Game 2 &mdash; The Doctors&apos; Lounge</span>
+      <span>THE LOUNGE</span>
       <span class="q-pts">Predict &bull; Discuss &bull; Persuade</span>
       <div class="q-level-line"></div>
     </div>
@@ -517,7 +540,7 @@ table{max-width:100%}
   <div class="g3-wrap">
     <div class="q-level">
       <div class="q-level-line"></div>
-      <span>Game 3 &mdash; The Ghana Case Files</span>
+      <span>GRAND ROUNDS</span>
       <span class="q-pts">Progressive Scoring</span>
       <div class="q-level-line"></div>
     </div>
@@ -1011,10 +1034,10 @@ function goPage(id){
   document.getElementById('page-'+id).classList.add('active');
   const labels={
     home:'27th August \u00b7 SID Apartments, Accra',
-    game1:'Game 1 \u00b7 Doctor, What Would You Do?',
-    game2:'Game 2 \u00b7 The Doctors\u2019 Lounge',
+    game1:'STAT',
+    game2:'The Lounge',
     humanity:'Intermission \u00b7 Quick Break',
-    game3:'Game 3 \u00b7 The Ghana Case Files',
+    game3:'Grand Rounds',
     tiebreaker:'Tiebreaker \u00b7 Speed Round',
     finale:'Grand Finale \u00b7 Doctors Night',
     goodbye:'Goodbye \u00b7 See You Next Time'
@@ -1688,6 +1711,21 @@ function _timeup(ctx){
 function toggleHostMode(){
   document.body.classList.toggle('host-mode');
 }
+
+// ── FULL SCREEN ────────────────────────────────────────────────
+function toggleFullscreen(){
+  const el=document.documentElement;
+  if(!document.fullscreenElement){
+    (el.requestFullscreen||el.webkitRequestFullscreen||function(){}).call(el);
+    if(soundEnabled)startAmbient();
+  } else {
+    (document.exitFullscreen||document.webkitExitFullscreen||function(){}).call(document);
+  }
+}
+document.addEventListener('fullscreenchange',()=>{
+  const label=document.getElementById('fullscreenBtnLabel');
+  if(label)label.textContent=document.fullscreenElement?'Exit Full Screen':'Enter Full Screen';
+});
 
 // ── MUTE TOGGLE ────────────────────────────────────────────────
 function toggleSound(){

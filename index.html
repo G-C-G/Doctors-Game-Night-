@@ -18,7 +18,7 @@ body{display:flex;flex-direction:column}
 .topbar{position:fixed;top:0;left:0;right:0;z-index:20;height:54px;display:flex;align-items:center;justify-content:space-between;padding:0 36px;border-bottom:1px solid var(--border);background:rgba(8,24,62,0.94);backdrop-filter:blur(14px)}
 .tb-brand{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:0.1em;color:var(--yellow);display:flex;align-items:center;gap:10px}
 .tb-cross{color:var(--mint);font-size:16px;line-height:1}
-.tb-game{font-size:8px;letter-spacing:0.3em;text-transform:uppercase;color:var(--muted)}
+.tb-game{font-size:8px;letter-spacing:0.3em;text-transform:uppercase;color:var(--muted);padding-right:56px}
 .tb-nav{display:flex;gap:3px;flex-wrap:wrap}
 .nav-btn{font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.15em;text-transform:uppercase;padding:7px 14px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all 0.2s}
 .nav-btn:hover,.nav-btn.active{background:var(--yellow);color:#08183E;border-color:var(--yellow);cursor:pointer}
@@ -195,6 +195,8 @@ body{display:flex;flex-direction:column}
 /* ── HOST CHROME TOGGLE ── */
 body:not(.host-mode) .host-ctrl{display:none!important}
 .host-toggle{position:fixed;top:16px;right:16px;width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.18);cursor:pointer;z-index:60;transition:all 0.2s}
+.fs-toggle{position:fixed;top:11px;right:34px;width:20px;height:20px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.28);cursor:pointer;z-index:60;transition:color 0.2s}
+.fs-toggle:hover{color:var(--mint)}
 .host-toggle:hover{background:rgba(245,215,110,0.5);border-color:var(--yellow);transform:scale(1.5)}
 body.host-mode .host-toggle{background:var(--yellow);border-color:var(--yellow);box-shadow:0 0 8px rgba(245,215,110,0.6)}
 .host-panel{position:fixed;top:0;left:0;right:0;z-index:55;flex-direction:column;background:rgba(6,14,42,0.98);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);padding:10px 20px}
@@ -251,6 +253,9 @@ table{max-width:100%}
   <div class="tb-game" id="topGameLabel">27th August &middot; SID Apartments, Accra</div>
 </div>
 <div class="host-toggle" id="hostToggle" onclick="toggleHostMode()" title="Host controls (or press `)"></div>
+<div class="fs-toggle" onclick="toggleFullscreen()" title="Full screen">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+</div>
 <div class="host-panel host-ctrl">
   <div class="host-panel-nav">
     <button class="nav-btn active" onclick="goPage('home')">Home</button>
@@ -694,33 +699,36 @@ table{max-width:100%}
       You spend most of your life taking care of everyone else.
     </div>
 
-    <div style="font-family:'DM Serif Display',serif;font-style:italic;font-size:clamp(16px,2.3vw,26px);color:var(--white);line-height:1.8;margin-bottom:32px;opacity:0;animation:staggerIn 0.7s ease 1.3s both">
-      We hope tonight you felt seen, taken care of, and had lots of fun along the way.
+    <div style="font-family:'DM Serif Display',serif;font-style:italic;font-size:clamp(16px,2.3vw,26px);color:var(--white);line-height:1.8;margin-bottom:6px;opacity:0;animation:staggerIn 0.7s ease 1.3s both">
+      We hope you felt seen tonight.
+    </div>
+    <div style="font-family:'DM Serif Display',serif;font-style:italic;font-size:clamp(16px,2.3vw,26px);color:var(--white);line-height:1.8;margin-bottom:32px;opacity:0;animation:staggerIn 0.7s ease 1.7s both">
+      And had a little too much fun along the way.
     </div>
 
     <!-- Connection call-to-action -->
-    <div style="font-family:'DM Serif Display',serif;font-style:italic;font-size:clamp(16px,2.3vw,26px);color:var(--white);line-height:1.8;margin-bottom:32px;opacity:0;animation:staggerIn 0.7s ease 2s both">
+    <div style="font-family:'DM Serif Display',serif;font-style:italic;font-size:clamp(16px,2.3vw,26px);color:var(--white);line-height:1.8;margin-bottom:32px;opacity:0;animation:staggerIn 0.7s ease 2.3s both">
       Before you leave, talk to someone you didn&apos;t come with.<br/>
       Swap numbers. Make plans.<br/>
       Continue the argument from the games.
     </div>
 
     <!-- Joke — extra pauses so setup and punchline land as their own beats -->
-    <div style="font-family:'DM Serif Display',serif;font-style:italic;font-size:clamp(16px,2.3vw,26px);color:var(--white);line-height:1.8;margin-bottom:14px;opacity:0;animation:staggerIn 0.7s ease 2.7s both">
+    <div style="font-family:'DM Serif Display',serif;font-style:italic;font-size:clamp(16px,2.3vw,26px);color:var(--white);line-height:1.8;margin-bottom:14px;opacity:0;animation:staggerIn 0.7s ease 3s both">
       And remember:
     </div>
-    <div style="font-family:'DM Serif Display',serif;font-style:italic;font-size:clamp(16px,2.3vw,26px);color:var(--white);line-height:1.8;margin-bottom:14px;opacity:0;animation:staggerIn 0.7s ease 3s both">
+    <div style="font-family:'DM Serif Display',serif;font-style:italic;font-size:clamp(16px,2.3vw,26px);color:var(--white);line-height:1.8;margin-bottom:14px;opacity:0;animation:staggerIn 0.7s ease 3.3s both">
       A chill pill is also preventative medicine.
     </div>
-    <div style="font-family:'DM Serif Display',serif;font-style:italic;font-size:clamp(16px,2.3vw,26px);font-weight:700;color:var(--white);line-height:1.5;margin-bottom:36px;opacity:0;animation:staggerIn 0.8s ease 3.9s both">
+    <div style="font-family:'DM Serif Display',serif;font-style:italic;font-size:clamp(16px,2.3vw,26px);font-weight:700;color:var(--white);line-height:1.5;margin-bottom:36px;opacity:0;animation:staggerIn 0.8s ease 4.2s both">
       The best dose is from <span style="color:var(--yellow)">Gold Coast Games</span>. &#128540;
     </div>
 
-    <div style="font-family:'DM Serif Display',serif;font-style:italic;font-size:clamp(22px,3.6vw,40px);font-weight:700;color:var(--yellow);line-height:1.3;margin-bottom:36px;opacity:0;animation:staggerIn 0.7s ease 4.8s both">
+    <div style="font-family:'DM Serif Display',serif;font-style:italic;font-size:clamp(22px,3.6vw,40px);font-weight:700;color:var(--yellow);line-height:1.3;margin-bottom:36px;opacity:0;animation:staggerIn 0.7s ease 5.1s both">
       See you soon.
     </div>
 
-    <div style="width:48px;height:1px;background:rgba(61,191,160,0.2);margin:0 auto 32px;opacity:0;animation:staggerIn 0.6s ease 5.3s both"></div>
+    <div style="width:48px;height:1px;background:rgba(61,191,160,0.2);margin:0 auto 32px;opacity:0;animation:staggerIn 0.6s ease 5.6s both"></div>
 
     <!-- Social media section -->
     <div style="font-size:9px;letter-spacing:0.32em;text-transform:uppercase;color:var(--yellow);margin-bottom:20px;opacity:0;animation:staggerIn 0.6s ease 5.7s both">Stay Connected</div>
@@ -772,7 +780,7 @@ table{max-width:100%}
 <!-- SCORE BAR -->
 <div class="score-bar">
   <div id="score-teams"></div>
-  <div class="score-reset host-ctrl" onclick="if(confirm('Reset all scores?'))resetScores()">Reset</div>
+  <div class="score-reset host-ctrl" id="scoreResetBtn" onclick="scoreResetClick()">Reset</div>
 </div>
 
 <!-- WHISPER -->
@@ -1765,6 +1773,29 @@ function renameTeam(idx){
   if(n){teamNames[idx]=n;buildScoreBar();buildLockInRow();}
 }
 function resetScores(){scores=[0,0,0,0];buildScoreBar();}
+let resetArmed=false;
+let resetArmTimer=null;
+function scoreResetClick(){
+  const el=document.getElementById('scoreResetBtn');
+  if(!el)return;
+  if(!resetArmed){
+    resetArmed=true;
+    el.textContent='Tap again to confirm';
+    el.style.color='var(--red)';
+    clearTimeout(resetArmTimer);
+    resetArmTimer=setTimeout(()=>{
+      resetArmed=false;
+      el.textContent='Reset';
+      el.style.color='';
+    },4000);
+  } else {
+    resetArmed=false;
+    clearTimeout(resetArmTimer);
+    el.textContent='Reset';
+    el.style.color='';
+    resetScores();
+  }
+}
 
 // ===== KEYBOARD =====
 document.addEventListener('keydown',e=>{

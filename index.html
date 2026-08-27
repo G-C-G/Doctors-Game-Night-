@@ -147,9 +147,9 @@ body{display:flex;flex-direction:column}
 .g3-wrap{width:100%;max-width:940px}
 .g3-title-big{font-family:'DM Serif Display',serif;font-size:clamp(26px,4vw,56px);font-style:italic;font-weight:700;line-height:1;color:var(--white);margin-bottom:6px}
 .g3-sub{font-size:9.5px;letter-spacing:0.25em;text-transform:uppercase;color:var(--yellow);margin-bottom:16px}
-.g3-criteria{display:flex;flex-direction:column;gap:10px;text-align:left;align-items:center}
-.g3-criterion{background:rgba(12,32,80,0.72);border:1px solid var(--border);padding:16px;position:relative;overflow:hidden;opacity:0;transform:translateY(14px);transition:all 0.45s;width:100%;max-width:740px}
-.g3-criterion.reveal{opacity:1;transform:translateY(0)}
+.g3-criteria{display:flex;flex-direction:column;gap:10px;text-align:left;align-items:center;position:relative;width:100%}
+.g3-criterion{background:rgba(12,32,80,0.72);border:1px solid var(--border);padding:16px;position:absolute;overflow:hidden;opacity:0;transform:translateY(14px);transition:all 0.45s;width:100%;max-width:740px;pointer-events:none}
+.g3-criterion.reveal{position:static;opacity:1;transform:translateY(0);pointer-events:auto}
 .g3-criterion.reveal.current{padding:26px 32px;border-color:rgba(245,215,110,0.3);background:linear-gradient(135deg,#0c2360,#0a1c4c)}
 .g3-criterion.reveal.current .g3-crit-title{font-size:clamp(15px,2.4vw,24px);margin-bottom:8px}
 .g3-criterion.reveal.current .g3-crit-desc{font-size:clamp(12px,1.7vw,16.5px);line-height:1.8}
@@ -260,7 +260,6 @@ table{max-width:100%}
     <button class="nav-btn" onclick="goPage('game3')">Game 3</button>
     <button class="nav-btn" onclick="goPage('tiebreaker')">Tiebreaker</button>
     <button class="nav-btn" onclick="goPage('finale')" style="border-color:rgba(245,215,110,0.3);color:rgba(245,215,110,0.5)">&#10010; Finale</button>
-    <button class="nav-btn" onclick="goPage('goodbye')" style="border-color:rgba(61,191,160,0.3);color:rgba(61,191,160,0.6)">&#128079; Goodbye</button>
     <button id="sound-toggle" onclick="toggleSound()" style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.15em;text-transform:uppercase;padding:5px 10px;border:1px solid rgba(61,191,160,0.35);background:transparent;color:rgba(61,191,160,0.7);cursor:pointer;white-space:nowrap;transition:all 0.2s" onmouseover="this.style.borderColor='var(--mint)';this.style.color='var(--mint)'" onmouseout="this.style.borderColor='rgba(61,191,160,0.35)';this.style.color='rgba(61,191,160,0.7)'">♥ Sound On</button>
   </div>
   <div class="host-panel-hint">Host View &middot; press ` to hide &middot; tap a score to +1 &middot; double-tap a name to rename</div>
@@ -354,7 +353,7 @@ table{max-width:100%}
 
     <!-- Stage 1: THINK -->
     <div class="g1-ctrl-set" id="g1-ctrl-1" style="display:none">
-      <button class="q-btn reveal" onclick="startTimer('g1',10)">&#9654; Start 10s</button>
+      <button class="q-btn reveal" onclick="startTimer('g1',10,()=>g1GoDiscuss())">&#9654; Start 10s</button>
       <button class="q-btn" onclick="g1GoDiscuss()">&#8594; Discuss</button>
     </div>
 
@@ -427,7 +426,7 @@ table{max-width:100%}
     <!-- STAGE 1: THINK (15s personal reflection) -->
     <div class="g2-stage" id="g2-stage-1">
       <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
-        <button class="q-btn reveal" onclick="startTimer('g2',15);document.getElementById('g2-timer-label').textContent='Think \u2014 15s'">&#9654; Start 15s</button>
+        <button class="q-btn reveal" onclick="startTimer('g2',15,()=>g2GoDiscuss());document.getElementById('g2-timer-label').textContent='Think \u2014 15s'">&#9654; Start 15s</button>
         <button class="q-btn" onclick="resetTimer('g2',15);document.getElementById('g2-timer-label').textContent='Think \u2014 15s'">&#8634; Reset</button>
         <button class="q-btn" onclick="g2GoDiscuss()">&#8594; Discuss</button>
       </div>
@@ -553,9 +552,9 @@ table{max-width:100%}
       <div style="font-size:8px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);padding:5px 10px;border:1px solid var(--border)">Clue 6 &#8594; <span style="color:var(--mint)">5 pts</span></div>
       <div style="font-size:8px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);padding:5px 10px;border:1px solid var(--border)">Final &#8594; <span style="color:var(--red)">2 pts</span></div>
     </div>
-    <!-- HOST NOTE -->
+    <!-- THESIS LINE (audience-facing framing, not a host script) -->
     <div style="font-size:9px;letter-spacing:0.06em;color:rgba(245,215,110,0.65);border-left:2px solid var(--yellow);padding:6px 14px;margin-bottom:10px;text-align:left;max-width:640px;margin-left:auto;margin-right:auto;background:rgba(245,215,110,0.03);font-style:italic">
-      HOST: &ldquo;Medicine rewards good thinking &mdash; not rushing. Teams, decide: do you lock in now or wait for more?&rdquo;
+      Medicine rewards good thinking, not rushing. Decide as a team: lock in now, or wait for more?
     </div>
     <!-- LOCK IN ROW -->
     <div style="display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin-bottom:8px" id="g3-lockin-row"></div>
@@ -616,15 +615,19 @@ table{max-width:100%}
     </div>
     <div id="g3-answer-box" style="display:none;margin-top:12px">
       <div class="answer-reveal">
-        <div class="answer-reveal-label">&#10010; Diagnosis &amp; Host Discussion</div>
+        <div class="answer-reveal-label">&#10010; Diagnosis</div>
         <div class="answer-reveal-text"><strong style="color:var(--yellow)">INSULINOMA</strong> &mdash; a pancreatic tumour producing insulin endogenously, causing episodic hypoglycaemia in a non-diabetic patient.</div>
         <div class="answer-insight">
-          <span class="answer-insight-label">&#128172; Host Discussion Points</span>
-          Ask: Which clue changed your thinking? Which single detail mattered most? Who suspected an endocrine cause early? The snack-carrying behaviour (Clue 4) is the tell &mdash; it represents the patient&apos;s unconscious self-treatment. The classic Whipple&apos;s Triad: symptomatic hypoglycaemia, glucose below 2.5 mmol/L, relief with glucose administration.
+          <span class="answer-insight-label">&#128172; Key Insight</span>
+          The snack-carrying behaviour (Clue 4) is the tell &mdash; it represents the patient&apos;s unconscious self-treatment. Classic Whipple&apos;s Triad: symptomatic hypoglycaemia, glucose below 2.5 mmol/L, relief with glucose administration.
         </div>
         <div class="answer-fact">
           <span class="answer-fact-label">&#128161; Clinical Note</span>
           Insulinoma is rare (1&ndash;4 per million per year) but is the most common functional pancreatic neuroendocrine tumour. 90% are benign and solitary. Surgical resection is curative in most cases. The diagnosis is often delayed by months or years because episodes are intermittent and self-resolving.
+        </div>
+        <div class="answer-insight host-ctrl">
+          <span class="answer-insight-label">Host Prompts</span>
+          Ask: Which clue changed your thinking? Which single detail mattered most? Who suspected an endocrine cause early?
         </div>
       </div>
     </div>
@@ -668,79 +671,70 @@ table{max-width:100%}
   </div>
 </div>
 
-<!-- GRAND FINALE -->
-<div class="screen page" id="page-finale" style="overflow:auto;justify-content:center">
-  <div style="width:100%;max-width:820px;padding:20px 0;text-align:center">
-    <div style="display:flex;justify-content:center;margin-bottom:28px">
-      <svg width="160" height="46" viewBox="0 0 180 52" xmlns="http://www.w3.org/2000/svg">
-        <path class="ecg-path" d="M 0 26 L 28 26 L 34 26 L 38 5 L 46 47 L 52 26 L 72 26 L 78 18 L 84 26 L 118 26 L 124 26 L 128 5 L 136 47 L 142 26 L 162 26 L 168 18 L 174 26 L 180 26" fill="none" stroke="#3DBFA0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </div>
-    <div style="font-size:9px;letter-spacing:0.38em;text-transform:uppercase;color:var(--mint);margin-bottom:22px" id="finale-winner-label"></div>
-    <div style="font-family:'DM Serif Display',serif;font-style:italic;font-size:clamp(13px,2.4vw,28px);font-weight:700;color:var(--white);line-height:1.75;margin-bottom:32px" id="finale-lines"></div>
-    <div style="width:60px;height:1px;background:rgba(245,215,110,0.25);margin:0 auto 28px"></div>
-    <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(22px,4vw,52px);letter-spacing:0.08em;color:var(--yellow);line-height:1.05;margin-bottom:4px">Gold Coast Games</div>
-    <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(14px,2.4vw,32px);letter-spacing:0.12em;color:var(--white);margin-bottom:10px">Doctors Night</div>
-    <div style="font-size:9px;letter-spacing:0.22em;text-transform:uppercase;color:var(--muted)">Celebrating the people behind the profession.</div>
-    <div style="margin-top:22px">
-      <button onclick="setWinner()" style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.18em;text-transform:uppercase;padding:10px 22px;border:1px solid var(--yellow);background:transparent;color:var(--yellow);cursor:pointer;margin-right:8px">&#10010; Set Winner</button>
-      <button onclick="buildFinale()" style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.18em;text-transform:uppercase;padding:10px 22px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer">&#9654; Play Tribute</button>
-    </div>
-  </div>
-</div>
-
-<!-- GOODBYE PAGE -->
-<div class="screen page" id="page-goodbye" style="overflow:auto;justify-content:flex-start;padding-top:80px;padding-bottom:80px">
+<!-- FINALE (merged former Finale + Goodbye pages: Goodbye's copy, Finale's layout/motifs) -->
+<div class="screen page" id="page-finale" style="overflow:auto;justify-content:flex-start;padding-top:60px;padding-bottom:80px">
   <div style="width:100%;max-width:720px;text-align:center;padding:20px">
 
     <!-- Header -->
-    <div style="font-size:9px;letter-spacing:0.4em;text-transform:uppercase;color:var(--mint);margin-bottom:28px">&#10010; Gold Coast Games &middot; Doctors Night &middot; 27th August 2026</div>
+    <div style="font-size:9px;letter-spacing:0.4em;text-transform:uppercase;color:var(--mint);margin-bottom:16px;opacity:0;animation:staggerIn 0.7s ease 0.1s both">&#10010; Gold Coast Games &middot; Doctors Night &middot; 27th August 2026</div>
+
+    <!-- ECG logo — bookends the opening motif from Home -->
+    <div style="display:flex;justify-content:center;margin-bottom:24px;opacity:0;animation:staggerIn 0.7s ease 0.3s both">
+      <svg width="140" height="40" viewBox="0 0 180 52" xmlns="http://www.w3.org/2000/svg">
+        <path class="ecg-path" d="M 0 26 L 28 26 L 34 26 L 38 5 L 46 47 L 52 26 L 72 26 L 78 18 L 84 26 L 118 26 L 124 26 L 128 5 L 136 47 L 142 26 L 162 26 L 168 18 L 174 26 L 180 26" fill="none" stroke="#3DBFA0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+
+    <!-- Champions trigger — host-only; the show is the full-screen champions beat -->
+    <button class="host-ctrl" onclick="setWinner()" style="font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.18em;text-transform:uppercase;padding:8px 18px;border:1px solid var(--yellow);background:transparent;color:var(--yellow);cursor:pointer;margin-bottom:28px">&#127942; Reveal Champions</button>
 
     <!-- Main farewell -->
-    <div style="font-family:'DM Serif Display',serif;font-style:italic;font-size:clamp(24px,4.4vw,58px);font-weight:700;color:var(--yellow);line-height:1.15;margin-bottom:14px">
+    <div style="font-family:'DM Serif Display',serif;font-style:italic;font-size:clamp(24px,4.4vw,58px);font-weight:700;color:var(--yellow);line-height:1.15;margin-bottom:14px;opacity:0;animation:staggerIn 0.7s ease 0.6s both">
       You spend most of your life<br/>taking care of everyone else.
     </div>
-    <div style="font-family:'DM Serif Display',serif;font-style:italic;font-size:clamp(16px,2.6vw,30px);color:var(--mint);line-height:1.3;margin-bottom:32px">
+    <div style="font-family:'DM Serif Display',serif;font-style:italic;font-size:clamp(16px,2.6vw,30px);color:var(--mint);line-height:1.3;margin-bottom:32px;opacity:0;animation:staggerIn 0.7s ease 1.1s both">
       Tonight was your turn.
     </div>
 
-    <div style="font-family:'DM Serif Display',serif;font-style:italic;font-size:clamp(16px,2.4vw,28px);color:var(--white);line-height:1.9;margin-bottom:28px">
+    <div style="font-family:'DM Serif Display',serif;font-style:italic;font-size:clamp(16px,2.4vw,28px);color:var(--white);line-height:1.9;margin-bottom:28px;opacity:0;animation:staggerIn 0.7s ease 1.7s both">
       Thank you for showing up.<br/>
       For the long nights.<br/>
       For the difficult calls.<br/>
       For the lives you carry with you.
     </div>
 
-    <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(22px,4vw,46px);letter-spacing:0.08em;color:var(--yellow);line-height:1.15;margin-bottom:32px">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(22px,4vw,46px);letter-spacing:0.08em;color:var(--yellow);line-height:1.15;margin-bottom:32px;opacity:0;animation:staggerIn 0.7s ease 2.4s both">
       Go home.<br/>You&apos;ve earned it.
     </div>
 
-    <div style="font-family:'DM Serif Display',serif;font-style:italic;font-size:clamp(14px,2vw,22px);color:var(--mint);line-height:1.8;margin-bottom:32px">
+    <!-- Joke 1 — extra pause before it so the punchline lands as its own beat -->
+    <div style="font-family:'DM Serif Display',serif;font-style:italic;font-size:clamp(14px,2vw,22px);color:var(--mint);line-height:1.8;margin-bottom:32px;opacity:0;animation:staggerIn 0.8s ease 3.3s both">
       And please&hellip;<br/>
       Prescribe yourselves a chill pill once in a while.
     </div>
 
-    <div style="width:48px;height:1px;background:rgba(245,215,110,0.2);margin:0 auto 28px"></div>
+    <div style="width:48px;height:1px;background:rgba(245,215,110,0.2);margin:0 auto 28px;opacity:0;animation:staggerIn 0.6s ease 3.9s both"></div>
 
     <!-- Connection message -->
-    <div style="font-size:clamp(12px,1.8vw,17px);color:var(--muted);line-height:1.9;margin-bottom:10px;letter-spacing:0.03em">
+    <div style="font-size:clamp(12px,1.8vw,17px);color:var(--muted);line-height:1.9;margin-bottom:10px;letter-spacing:0.03em;opacity:0;animation:staggerIn 0.7s ease 4.2s both">
       If you&apos;ve enjoyed a conversation tonight,<br/>
       don&apos;t let it end here.<br/>
       Swap contacts. Stay connected.<br/>
       Keep building the community.
     </div>
 
-    <div style="font-family:'DM Serif Display',serif;font-style:italic;font-size:clamp(12px,1.6vw,16px);color:rgba(245,215,110,0.55);margin-bottom:36px;line-height:1.7">
+    <!-- Joke 2 — same beat treatment -->
+    <div style="font-family:'DM Serif Display',serif;font-style:italic;font-size:clamp(12px,1.6vw,16px);color:rgba(245,215,110,0.55);margin-bottom:36px;line-height:1.7;opacity:0;animation:staggerIn 0.8s ease 5.1s both">
       And please go get some sleep before you start<br/>diagnosing your Uber driver on the way home.
     </div>
 
-    <div style="width:48px;height:1px;background:rgba(61,191,160,0.2);margin:0 auto 32px"></div>
+    <div style="width:48px;height:1px;background:rgba(61,191,160,0.2);margin:0 auto 32px;opacity:0;animation:staggerIn 0.6s ease 5.6s both"></div>
 
     <!-- Social media section -->
-    <div style="font-size:9px;letter-spacing:0.32em;text-transform:uppercase;color:var(--yellow);margin-bottom:20px">Stay Connected</div>
+    <div style="font-size:9px;letter-spacing:0.32em;text-transform:uppercase;color:var(--yellow);margin-bottom:20px;opacity:0;animation:staggerIn 0.6s ease 5.8s both">Stay Connected</div>
 
     <!-- Instagram -->
-    <div style="background:rgba(61,191,160,0.06);border:1px solid rgba(61,191,160,0.18);padding:18px 24px;margin-bottom:10px;text-align:left">
+    <div style="background:rgba(61,191,160,0.06);border:1px solid rgba(61,191,160,0.18);padding:18px 24px;margin-bottom:10px;text-align:left;opacity:0;animation:staggerIn 0.6s ease 6.1s both">
       <div style="display:flex;align-items:flex-start;gap:16px">
         <div style="font-size:26px;line-height:1;margin-top:2px">&#128247;</div>
         <div>
@@ -752,7 +746,7 @@ table{max-width:100%}
     </div>
 
     <!-- Facebook -->
-    <div style="background:rgba(245,215,110,0.05);border:1px solid rgba(245,215,110,0.15);padding:18px 24px;margin-bottom:28px;text-align:left">
+    <div style="background:rgba(245,215,110,0.05);border:1px solid rgba(245,215,110,0.15);padding:18px 24px;margin-bottom:28px;text-align:left;opacity:0;animation:staggerIn 0.6s ease 6.4s both">
       <div style="display:flex;align-items:flex-start;gap:16px">
         <div style="font-size:26px;line-height:1;margin-top:2px">&#128081;</div>
         <div>
@@ -764,7 +758,7 @@ table{max-width:100%}
     </div>
 
     <!-- Share ask -->
-    <div style="background:rgba(217,64,80,0.05);border:1px solid rgba(217,64,80,0.15);padding:16px 24px;margin-bottom:32px">
+    <div style="background:rgba(217,64,80,0.05);border:1px solid rgba(217,64,80,0.15);padding:16px 24px;margin-bottom:32px;opacity:0;animation:staggerIn 0.6s ease 6.7s both">
       <div style="font-size:clamp(12px,1.7vw,16px);color:var(--white);line-height:1.8">
         Know someone who would love this?<br/>
         <span style="color:var(--yellow)">A lawyer. A nurse. A friend who works too hard.</span><br/>
@@ -774,10 +768,10 @@ table{max-width:100%}
     </div>
 
     <!-- Sign off -->
-    <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(20px,3.5vw,42px);letter-spacing:0.1em;color:var(--yellow);margin-bottom:4px">Gold Coast Games</div>
-    <div style="font-size:9px;letter-spacing:0.28em;text-transform:uppercase;color:var(--muted);margin-bottom:24px">Curated experiences. Intentional connection. Built in Ghana.</div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(20px,3.5vw,42px);letter-spacing:0.1em;color:var(--yellow);margin-bottom:4px;opacity:0;animation:staggerIn 0.6s ease 7s both">Gold Coast Games</div>
+    <div style="font-size:9px;letter-spacing:0.28em;text-transform:uppercase;color:var(--muted);margin-bottom:24px;opacity:0;animation:staggerIn 0.6s ease 7s both">Curated experiences. Intentional connection. Built in Ghana.</div>
 
-    <button onclick="goPage('home')" style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.2em;text-transform:uppercase;padding:12px 28px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all 0.25s" onmouseover="this.style.borderColor='var(--mint)';this.style.color='var(--mint)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">
+    <button onclick="goPage('home')" class="host-ctrl" style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.2em;text-transform:uppercase;padding:12px 28px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all 0.25s" onmouseover="this.style.borderColor='var(--mint)';this.style.color='var(--mint)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">
       &#8592; Back to Home
     </button>
   </div>
@@ -824,8 +818,8 @@ const questions=[
   // Q3 — THE MOST EXPENSIVE QUESTION IN MEDICINE
   {level:"Doctor, What Would You Do?",pts:"1 pt",
    q:"THE MOST EXPENSIVE QUESTION IN MEDICINE \u2014 Every doctor has answered it. Very few doctors have ever been paid for it. What question is responsible for the greatest number of free medical consultations in history?",
-   a:"Reveal one at a time \u2192\n\n1\ufe0f\u20e3  \u201cAre you a doctor?\u201d\n2\ufe0f\u20e3  \u201cYou\u2019re a doctor, right?\u201d\n3\ufe0f\u20e3  \u201cDoctor\u2026 please, just one quick question\u2026\u201d",
-   insight:"HOST: Reveal each line one at a time after the timer. Accept any wording that clearly captures the same idea. \u201cCollectively responsible for millions of unpaid consultations worldwide.\u201d"},
+   a:"1\ufe0f\u20e3  \u201cAre you a doctor?\u201d\n2\ufe0f\u20e3  \u201cYou\u2019re a doctor, right?\u201d\n3\ufe0f\u20e3  \u201cDoctor\u2026 please, just one quick question\u2026\u201d",
+   insight:"Accept any wording that captures the same idea. Collectively responsible for millions of unpaid consultations worldwide."},
 
   // Q4 — ANATOMY NEVER DIES
   {level:"Doctor, What Would You Do?",pts:"1 pt",
@@ -933,13 +927,6 @@ const tbQuestions=[
    a:"Clinical judgement \u2014 the ability to synthesise incomplete information, manage uncertainty, and make sound decisions under pressure. It is built through observation, reflection, and experience. No textbook can teach it directly."},
 ];
 
-// ===== FINALE DATA =====
-const finaleLines=[
-  "Ten questions. Six clues. One room full of people who save lives for a living.",
-  "Tonight, one team takes the trophy.",
-  "Every one of you already won the hard part."
-];
-
 // ===== STATE =====
 let g1Current=0;
 let g1Stage=0; // 0=ready 1=think 2=discuss 3=lock 4=result
@@ -1039,8 +1026,7 @@ function goPage(id){
     humanity:'Intermission \u00b7 Quick Break',
     game3:'Grand Rounds',
     tiebreaker:'Tiebreaker \u00b7 Speed Round',
-    finale:'Grand Finale \u00b7 Doctors Night',
-    goodbye:'Goodbye \u00b7 See You Next Time'
+    finale:'Finale \u00b7 Doctors Night'
   };
   document.getElementById('topGameLabel').textContent=labels[id]||'';
   document.querySelectorAll('.nav-btn').forEach(b=>{
@@ -1049,10 +1035,9 @@ function goPage(id){
     if((id==='home'&&t.includes('home'))||(id==='game1'&&t.includes('game 1'))||
        (id==='game2'&&t.includes('game 2'))||(id==='humanity'&&t.includes('humanity'))||
        (id==='game3'&&t.includes('game 3'))||(id==='tiebreaker'&&t.includes('tiebreaker'))||
-       (id==='finale'&&t.includes('finale'))||(id==='goodbye'&&t.includes('goodbye')))
+       (id==='finale'&&t.includes('finale')))
       b.classList.add('active');
   });
-  if(id==='finale')setTimeout(buildFinale,120);
   if(id==='game3')buildLockInRow();
   fitPageContent();
 }
@@ -1127,19 +1112,19 @@ function loadQ(idx){
 function g1StartThink(){
   g1SetStage(1);
   document.getElementById('g1-timer-label').textContent='Think \u2014 10s';
-  startTimer('g1',10,()=>g1GoDiscuss());
+  resetTimer('g1',10);
 }
 
 function g1GoDiscuss(){
   g1SetStage(2);
   document.getElementById('g1-timer-label').textContent='Discuss \u2014 45s';
-  startTimer('g1',45);
+  resetTimer('g1',45);
 }
 
 function g1GoLock(){
   g1SetStage(3);
   document.getElementById('g1-timer-label').textContent='Lock \u2014 10s';
-  startTimer('g1',10);
+  resetTimer('g1',10);
 }
 
 function g1Reveal(){
@@ -1251,19 +1236,19 @@ function flipCard(){playSwoosh();document.getElementById('card-flip').classList.
 function g2GoThink(){
   g2SetStage(1);
   document.getElementById('g2-timer-label').textContent='Think \u2014 15s';
-  startTimer('g2',15,()=>g2GoDiscuss());
+  resetTimer('g2',15);
 }
 
 function g2GoDiscuss(){
   g2SetStage(2);
   document.getElementById('g2-timer-label').textContent='Discuss \u2014 60s';
-  startTimer('g2',60);
+  resetTimer('g2',60);
 }
 
 function g2GoLock(){
   g2SetStage(3);
   document.getElementById('g2-timer-label').textContent='Lock \u2014 15s';
-  startTimer('g2',15);
+  resetTimer('g2',15);
 }
 
 function g2GoPresent(){
@@ -1326,7 +1311,6 @@ function g2UpdatePresentDisplay(){
   if(el) el.textContent=name+' \u2014 Presenting';
   document.getElementById('g2-timer-label').textContent=name+' \u2014 60s';
   resetTimer('g2',60);
-  startTimer('g2',60);
 }
 
 function g2NextPresenter(){
@@ -1451,22 +1435,8 @@ function setVolunteer(){
 }
 
 // ===== FINALE =====
-function buildFinale(){
-  const wrap=document.getElementById('finale-lines');
-  if(!wrap)return;
-  wrap.innerHTML='';
-  finaleLines.forEach((line,i)=>{
-    const p=document.createElement('p');
-    p.textContent=line;
-    p.style.cssText='opacity:0;transform:translateY(12px);transition:opacity 0.6s ease,transform 0.6s ease;transition-delay:'+(i*0.3)+'s;margin-bottom:4px';
-    wrap.appendChild(p);
-    setTimeout(()=>{p.style.opacity='1';p.style.transform='translateY(0)';},100+(i*300));
-  });
-}
 function setWinner(){
   const w=prompt('Enter winning team name:');
-  const label=document.getElementById('finale-winner-label');
-  if(w&&label){label.textContent='\u{1F3C6} Tonight\u2019s Champions: '+w;label.style.color='var(--yellow)';}
   if(w)showChampionsBeat(w);
 }
 
